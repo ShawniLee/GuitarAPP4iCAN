@@ -1,0 +1,252 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@drawable/bg_main"
+    android:orientation="vertical"
+    android:id="@+id/mainLayout">
+
+
+    <RelativeLayout
+        android:id="@+id/inputLayout"
+        android:layout_width="match_parent"
+        android:layout_height="0sp"
+        android:layout_above="@+id/button3"
+
+        android:layout_alignParentStart="true"
+        android:layout_marginBottom="14dp"
+        android:layout_weight="14">
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/buttonLayout"
+        android:layout_width="match_parent"
+        android:layout_height="0sp"
+        android:layout_weight="5.3">
+
+        <Button
+            android:id="@+id/buttonBackSpace"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:background="@drawable/bg_num_button"
+            android:text="←" />
+
+        <Button
+            android:id="@+id/buttonSpace"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@id/buttonBackSpace"
+            android:layout_toLeftOf="@id/buttonBackSpace"
+            android:background="@drawable/bg_num_button"
+            android:onClick="numClick"
+            android:tag="0"
+            android:text="—" />
+
+        <Button
+            android:id="@+id/button7"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@id/buttonSpace"
+            android:layout_toLeftOf="@id/buttonSpace"
+            android:background="@drawable/bg_num_button"
+            android:onClick="numClick"
+            android:tag="7"
+            android:text="7" />
+
+        <Button
+            android:id="@+id/button4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@id/button7"
+            android:layout_alignLeft="@id/button7"
+            android:background="@drawable/bg_num_button"
+            android:onClick="numClick"
+            android:tag="4"
+            android:text="4" />
+
+        <Button
+            android:id="@+id/button5"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@id/button4"
+            android:layout_toRightOf="@id/button4"
+            android:background="@drawable/bg_num_button"
+            android:onClick="numClick"
+            android:tag="5"
+            android:text="5" />
+
+        <Button
+            android:id="@+id/button6"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@id/button5"
+            android:layout_toRightOf="@id/button5"
+            android:background="@drawable/bg_num_button"
+            android:onClick="numClick"
+            android:tag="6"
+            android:text="6" />
+
+        <Button
+            android:id="@+id/button3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@id/button6"
+            android:layout_alignLeft="@id/button6"
+            android:background="@drawable/bg_num_button"
+            android:onClick="numClick"
+            android:tag="3"
+            android:text="3" />
+
+        <Button
+            android:id="@+id/button2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@id/button3"
+            android:layout_toLeftOf="@id/button3"
+            android:background="@drawable/bg_num_button"
+            android:onClick="numClick"
+            android:tag="2"
+            android:text="2" />
+
+        <Button
+            android:id="@+id/button1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@id/button2"
+            android:layout_toLeftOf="@id/button2"
+            android:background="@drawable/bg_num_button"
+            android:onClick="numClick"
+            android:tag="1"
+            android:text="1" />
+
+
+        <RadioGroup
+            android:id="@+id/radioGroup3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@id/radioGroup1"
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:id="@+id/radio6"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/radio"
+                android:button="@null"
+                android:checked="true"
+                android:gravity="center"
+                android:text="指弹" />
+
+            <RadioButton
+                android:id="@+id/radio7"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/radio"
+                android:button="@null"
+                android:gravity="center"
+                android:text="和弦" />
+        </RadioGroup>
+
+        <RadioGroup
+            android:id="@+id/radioGroup1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentLeft="true">
+
+            <RadioButton
+                android:id="@+id/radio0"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_weight="1"
+                android:background="@drawable/radio"
+                android:button="@null"
+                android:gravity="center"
+                android:text="高音" />
+
+            <RadioButton
+                android:id="@+id/radio1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/radio"
+                android:button="@null"
+                android:checked="true"
+                android:gravity="center"
+                android:text="中音" />
+
+            <RadioButton
+                android:id="@+id/radio2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/radio"
+                android:button="@null"
+                android:gravity="center"
+                android:text="低音" />
+        </RadioGroup>
+
+        <TextView
+            android:id="@+id/textView4"
+            android:layout_width="1sp"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@id/radioGroup1"
+            android:layout_alignTop="@id/radioGroup1"
+            android:layout_toRightOf="@id/radioGroup1"
+            android:background="#20B2AA" />
+
+        <RadioGroup
+            android:id="@+id/radioGroup2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_toRightOf="@id/textView4">
+
+            <RadioButton
+                android:id="@+id/radio3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/radio"
+                android:button="@null"
+                android:checked="true"
+                android:gravity="center"
+                android:text="升" />
+
+            <RadioButton
+                android:id="@+id/radio4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/radio"
+                android:button="@null"
+                android:checked="true"
+                android:gravity="center"
+                android:text="正常" />
+
+            <RadioButton
+                android:id="@+id/radio5"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/radio"
+                android:button="@null"
+                android:gravity="center"
+                android:text="降" />
+        </RadioGroup>
+
+
+    </RelativeLayout>
+
+
+    <RelativeLayout
+        android:id="@+id/extraLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        >
+    </RelativeLayout>
+
+
+</LinearLayout>

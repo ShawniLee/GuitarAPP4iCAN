@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#303f9f</color>
+        <color name="primary">#E43F3F</color>
+        <color name="primary_dark">#E12929</color>
+        <color name="primary_darker">#CC1D1D</color>
+        <color name="accent">#FFFFFF</color>
+
+        <color name="black">#000000</color>
+        <color name="jet">#222222</color>
+        <color name="oil">#333333</color>
+        <color name="monsoon">#777777</color>
+        <color name="jumbo">#888888</color>
+        <color name="aluminum">#999999</color>
+        <color name="base">#AAAAAA</color>
+        <color name="iron">#CCCCCC</color>
+        <color name="white">#FFFFFF</color>
+    <array name="tab_colors">
+    <item name="item_tab_1">#EE811D</item>
+    <item name="item_tab_2">#A73E12</item>
+    <item name="item_tab_3">#1F2847</item>
+    <item name="item_tab_4">#0E557F</item>
+    <item name="item_tab_5">#1D6F63</item>
+    </array>
+
+    <!--tab-->
+    <color name="tab_selected">#42b79f</color>
+    <color name="tab_unselect">#666666</color>
+    <color name="bg_search">#eeeeee</color>
+    <color name="divider_line1">#e4e4e4</color>
+    <color name="divider_line2">#cbcbcb</color>
+    <color name="text_deep">#333333</color>
+    <color name="gray">#8c8c8c</color>
+    <color name="gray_deep">#5c5c5c</color>
+    <color name="blue_deep">#1F2847</color>
+</resources>
