@@ -16,7 +16,7 @@ import ex.guitartest.teacher.StudentListAdapter;
 
 /**
  *
- * Created by mcp1993 on 2018/3/8 1008.
+ * Created by qyxlxr on 2018/3/8 1008.
  */
 
 public class MyStudentFragment extends Fragment {
@@ -35,7 +35,7 @@ public class MyStudentFragment extends Fragment {
         studentListAdapter = new StudentListAdapter(getActivity());
         grid_student.setAdapter(studentListAdapter);
     }
-    @OnClick(R.id.iv_message)
+    @OnClick(R.id.iv_message2)
     public void message(){
         Intent intent =  new Intent(getActivity(),MessageActivity.class);
         startActivity(intent);

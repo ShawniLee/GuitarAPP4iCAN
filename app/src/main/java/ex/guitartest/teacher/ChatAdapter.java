@@ -57,7 +57,7 @@ public class ChatAdapter extends BaseAdapter {
             }else {
                 viewHolder = (ViewHolder) convertView.getTag();
             }
-            viewHolder.tv_send = convertView.findViewById(R.id.tv_send);
+            viewHolder.tv_send.setText(datas.get(position));
             return convertView;
 
 

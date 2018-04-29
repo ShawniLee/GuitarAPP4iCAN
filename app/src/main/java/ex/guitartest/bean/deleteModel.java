@@ -11,9 +11,8 @@ import ex.guitartest.util.SizeSwitch;
 import ex.guitartest.viewutils.MusicNoteLayout;
 
 /**
- * @author jiangqideng@163.com
- * @date 2016-6-27 下午1:40:47
- * @description 删除音符时的逻辑，使用setMusicNoteLayout
+ *
+ * Created by qyxlx on 2018/3/12.
  */
 public class deleteModel {
 
