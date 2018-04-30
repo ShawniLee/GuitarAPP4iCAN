@@ -24,7 +24,6 @@
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
             android:layout_marginRight="10dp"/>
-
         <TextView
             android:id="@+id/ClockDown"
             android:layout_width="wrap_content"
@@ -48,12 +47,11 @@
                 android:layout_gravity="center_vertical"
                 android:layout_marginLeft="40dp"/>
         </LinearLayout>
-
     </RelativeLayout>
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="10dp"
+
         >
 
         <ListView
@@ -71,13 +69,12 @@
             android:id="@+id/tv_letter_overlay"
             android:layout_width="120dp"
             android:layout_height="120dp"
-            android:layout_alignParentStart="true"
-            android:layout_centerVertical="true"
             android:gravity="center"
-            android:textColor="@android:color/white"
+            android:layout_centerInParent="true"
             android:textSize="48sp"
             android:textStyle="bold"
-            android:visibility="gone" />
+            android:textColor="@android:color/white"
+            android:visibility="gone"/>
 
         <ex.guitartest.viewutils.SideLetterBar
             android:layout_marginTop="10dp"

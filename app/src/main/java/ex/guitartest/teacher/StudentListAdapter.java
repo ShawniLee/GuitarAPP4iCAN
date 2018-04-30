@@ -5,7 +5,9 @@ import android.content.Intent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import ex.guitartest.R;
 
@@ -16,9 +18,10 @@ import ex.guitartest.R;
 
 public class StudentListAdapter extends BaseAdapter {
     private Context context;
-
-    public StudentListAdapter(Context context) {
+    private String[] data;
+    public StudentListAdapter(Context context,String[] data) {
         this.context = context;
+        this.data=data;
     }
 
     @Override
@@ -45,12 +48,14 @@ public class StudentListAdapter extends BaseAdapter {
         if (convertView == null){
             viewHolder = new ViewHolder();
             convertView = View.inflate(context, R.layout.item_student, null);
-            viewHolder.ll_mystudent = convertView.findViewById(R.id.ll_mystudent);
+            viewHolder.ll_picture = convertView.findViewById(R.id.ll_picture);
+            viewHolder.ll_text=convertView.findViewById(R.id.ll_text);
+            viewHolder.ll_text.setText(data[position]);
             convertView.setTag(viewHolder);
         }else {
             viewHolder = (ViewHolder) convertView.getTag();
         }
-        viewHolder.ll_mystudent.setOnClickListener(new View.OnClickListener() {
+        viewHolder.ll_picture.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(context,ChatActivity.class);
@@ -63,7 +68,8 @@ public class StudentListAdapter extends BaseAdapter {
     }
 
     class ViewHolder{
-        LinearLayout ll_mystudent;
+        ImageView ll_picture;
+        TextView ll_text;
     }
 
 }

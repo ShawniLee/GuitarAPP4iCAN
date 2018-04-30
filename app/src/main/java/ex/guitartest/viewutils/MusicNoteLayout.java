@@ -38,7 +38,7 @@ public class MusicNoteLayout {
 
     public MusicNoteLayout(float size, Activity activity) {
 
-        this.size = dip2px(activity, size / 50)*(float)1.5;// 得到的size是相对于50px的倍数
+        this.size = dip2px(activity, size / 50)*(float)2;// 得到的size是相对于50px的倍数
         this.activity = activity;
 
         Display display = this.activity.getWindowManager().getDefaultDisplay();
@@ -90,6 +90,10 @@ public class MusicNoteLayout {
 
     public ArrayList<Integer> getStandardNums() {
         return standardNums;
+    }
+    public int getStandardNumsSize()
+    {
+        return  standardNums.size();
     }
 
     public void setStandardNums(ArrayList<Integer> standardNums) {
@@ -235,6 +239,9 @@ public class MusicNoteLayout {
         if(musicNote.getChord())
         {
             bigMusciStringTextView.setTextSize(px2sp(activity, 10 * size));
+            if (musicNote
+                    .getMusicString(outputBigMusicIndex).equals("Cm"))
+                bigMusciStringTextView.setTextSize(px2sp(activity, 8 * size));
         }
         bigMusciStringTextView.setText(musicNote
                 .getMusicString(outputBigMusicIndex));
@@ -299,8 +306,6 @@ public class MusicNoteLayout {
         cursorTextView.setWidth((int) (2 * size));
         cursorTextView.setHeight((int) (30 * size));
         cursorTextView.setBackgroundColor(Color.BLUE);
-        // cursorTextView.setText("●●●");
-        // cursorTextView.setTextSize(2*size);
         cursorTextView.setTextColor(Color.BLUE);
         layout.addView(cursorTextView);
         isCursorExisted = true;

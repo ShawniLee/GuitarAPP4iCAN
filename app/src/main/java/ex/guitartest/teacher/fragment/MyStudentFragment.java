@@ -9,10 +9,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.GridView;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import butterknife.OnClick;
 import ex.guitartest.R;
 import ex.guitartest.teacher.MessageActivity;
 import ex.guitartest.teacher.StudentListAdapter;
+
 
 /**
  *
@@ -28,16 +32,23 @@ public class MyStudentFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.fragment_mystudent,null);
         grid_student = view.findViewById(R.id.grid_student);
+        initData();
         initView();
         return view;
     }
     private void initView(){
-        studentListAdapter = new StudentListAdapter(getActivity());
+        String name[]={"李湘宁","黄庙林","黄茵绮","江家宝","张禹舜","韩方圆","李爽","李随星","印象"};
+        studentListAdapter = new StudentListAdapter(getActivity(),name);
         grid_student.setAdapter(studentListAdapter);
     }
     @OnClick(R.id.iv_message2)
     public void message(){
         Intent intent =  new Intent(getActivity(),MessageActivity.class);
         startActivity(intent);
+    }
+    void initData()
+    {
+
+
     }
 }

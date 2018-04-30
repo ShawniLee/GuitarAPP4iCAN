@@ -71,9 +71,10 @@ public class SpectrumFragment extends Fragment {
         SepetrumData.add(new SpectrumBean("爱的初体验","aidechutiyan"));
         SepetrumData.add(new SpectrumBean("ABCDE","Abcde"));
         SepetrumData.add(new SpectrumBean("宝贝","baobei"));
-        SepetrumData.add(new SpectrumBean("背叛","beipan"));
+        SepetrumData.add(new SpectrumBean("贝加尔湖畔","beijiaerhupan"));
         SepetrumData.add(new SpectrumBean("童年","tongnian"));
         SepetrumData.add(new SpectrumBean("小星星","xiaoxingxing"));
+
         spectrumListAdapter = new SpectrumListAdapter(getActivity(),SepetrumData);
         final AlertDialog dialog = new AlertDialog.Builder(getActivity())
                 .setTitle("播放模式选择")//设置对话框的标题
@@ -145,6 +146,10 @@ public class SpectrumFragment extends Fragment {
         case "童年":
             TotalString=preCode+"childhood"+"#";
             break;
+        case "贝加尔湖畔":
+            Intent intent = new Intent(getActivity(),SpectrumWriteActivity.class);
+            startActivity(intent);
+            //TODO:重构该部分跳转
     }
         connectAndWrite(TotalString);
     }

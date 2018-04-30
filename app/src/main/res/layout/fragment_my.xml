@@ -40,8 +40,11 @@
             android:layout_height="wrap_content"
             android:layout_below="@+id/civ_portrait"
             android:layout_marginLeft="120dp"
+            android:singleLine="false"
             android:text="Mr.Liu"
+
             android:textColor="@color/text_deep"
+            android:background="@null"
             android:textSize="18sp" />
     </RelativeLayout>
     <View
@@ -74,16 +77,19 @@
             android:layout_marginRight="20dp"
             android:src="@drawable/more"
             android:layout_centerVertical="true"/>
+
         <TextView
-            android:layout_toLeftOf="@+id/iv_more_1"
+            android:id="@+id/Name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_marginRight="10dp"
-            android:textSize="14sp"
-            android:textColor="@color/tab_unselect"
+            android:layout_toLeftOf="@+id/iv_more_1"
             android:text="刘先生"
-            />
+            android:background="@null"
+            
+            android:textColor="@color/tab_unselect"
+            android:textSize="14sp" />
     </RelativeLayout>
     <View
         android:layout_width="match_parent"
@@ -111,16 +117,19 @@
             android:layout_marginRight="20dp"
             android:src="@drawable/more"
             android:layout_centerVertical="true"/>
+
         <TextView
-            android:layout_toLeftOf="@+id/iv_more_2"
+            android:id="@+id/sex"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_marginRight="10dp"
-            android:textSize="14sp"
-            android:textColor="@color/tab_unselect"
+            android:layout_toLeftOf="@+id/iv_more_2"
             android:text="男"
-            />
+            android:background="@null"
+            
+            android:textColor="@color/tab_unselect"
+            android:textSize="14sp" />
     </RelativeLayout>
     <View
         android:layout_width="match_parent"
@@ -148,16 +157,19 @@
             android:layout_marginRight="20dp"
             android:src="@drawable/more"
             android:layout_centerVertical="true"/>
+
         <TextView
-            android:layout_toLeftOf="@+id/iv_more_3"
+            android:id="@+id/birth"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_marginRight="10dp"
-            android:textSize="14sp"
-            android:textColor="@color/tab_unselect"
+            android:layout_toLeftOf="@+id/iv_more_3"
             android:text="1990/09/20"
-            />
+            android:background="@null"
+            
+            android:textColor="@color/tab_unselect"
+            android:textSize="14sp" />
     </RelativeLayout>
     <View
         android:layout_width="match_parent"
@@ -186,16 +198,19 @@
             android:layout_marginRight="20dp"
             android:src="@drawable/more"
             android:layout_centerVertical="true"/>
+
         <TextView
-            android:layout_toLeftOf="@+id/iv_more_4"
+            android:id="@+id/location"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_marginRight="10dp"
-            android:textSize="14sp"
-            android:textColor="@color/tab_unselect"
+            android:layout_toLeftOf="@+id/iv_more_4"
             android:text="北京市海淀区"
-            />
+            android:background="@null"
+            
+            android:textColor="@color/tab_unselect"
+            android:textSize="14sp" />
     </RelativeLayout>
     <View
         android:layout_width="match_parent"
@@ -231,6 +246,7 @@
             android:layout_centerVertical="true"
             android:layout_marginRight="10dp"
             android:textSize="14sp"
+            android:background="@null"
             android:textColor="@color/tab_unselect"
             android:text="请输入"
             />
@@ -262,16 +278,19 @@
             android:layout_marginRight="20dp"
             android:src="@drawable/more"
             android:layout_centerVertical="true"/>
+
         <TextView
-            android:layout_toLeftOf="@+id/iv_more_6"
+            android:id="@+id/email"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_marginRight="10dp"
-            android:textSize="14sp"
-            android:textColor="@color/tab_unselect"
+            android:layout_toLeftOf="@+id/iv_more_6"
             android:text="5348138489@qq.com"
-            />
+            android:background="@null"
+            
+            android:textColor="@color/tab_unselect"
+            android:textSize="14sp" />
     </RelativeLayout>
     <View
         android:layout_width="match_parent"

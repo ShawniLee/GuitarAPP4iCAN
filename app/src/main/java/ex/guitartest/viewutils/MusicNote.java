@@ -14,9 +14,9 @@ public class MusicNote {
 	public boolean isProlong = false;
 	public int[] bigMusicNum = { 0, 2, 4, 5, 7, 9, 11 };// 全全半全全全半
 														// 这里数字以半音为一个单位,数组里是相差
-	public String bigMusicStrings[] = new String[] { "1", "1", "2", "3", "3",
+	static public String bigMusicStrings[] = new String[] { "1", "1", "2", "3", "3",
 			"4", "4", "5", "6", "6", "7", "7" };
-    private String[] chordMusicStrings = new String[]{"C", "C","C#", "D","D", "Em","Em", "E", "F","F","G","G","F#", "Ab", "A", "Bb", "B"};//Em为Eb,G和F#调换了位置
+    static public String[] chordMusicStrings = new String[]{"C", "Cm7", "Dm", "A7", "E", "F","G","F#", "Ab", "A", "Bb", "B"};//Em为Eb,G和F#调换了位置
 	public String offsetStrings[] = new String[] { " ", "#", " ", "b", " ",
 			" ", "#", " ", "b", " ", "b", " " };
 	public String checkPlayStrings[]=new String[]{"↑","↓","→","←"," "};
@@ -79,7 +79,7 @@ public class MusicNote {
 			int num = standardNum - outputBigMusicIndex - 12
 					* this.getPitch(outputBigMusicIndex);
 			if (chord) {
-				return chordMusicStrings[num];
+				return chordMusicStrings[outputBigMusicIndex-1];
 			} else {
 				return bigMusicStrings[num];
 			}
@@ -170,5 +170,9 @@ public class MusicNote {
 	public boolean getChord()
     {
         return chord;
+    }
+    static public String[] getChordMusicStrings()
+    {
+        return chordMusicStrings;
     }
 }

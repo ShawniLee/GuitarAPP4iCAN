@@ -1,7 +1,10 @@
 package ex.guitartest;
 
 import android.Manifest;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -17,6 +20,7 @@ import com.suke.widget.SwitchButton;
 import com.yanzhenjie.permission.AndPermission;
 import com.yanzhenjie.permission.PermissionListener;
 
+import java.util.Date;
 import java.util.List;
 
 import butterknife.BindView;
@@ -69,6 +73,17 @@ public class LoginActivity extends AppCompatActivity {
                 Manifest.permission.ACCESS_COARSE_LOCATION,
                 Manifest.permission.ACCESS_FINE_LOCATION
         ).requestCode(100).callback(permissionListener).start();
+
+        Intent intent = new Intent(this, AlarmService.class);
+        intent.setAction("NOTIFICATION");
+        PendingIntent pi =PendingIntent.getService(LoginActivity.this, 0,new Intent(LoginActivity.this,AlarmService.class), 0);
+        AlarmManager manager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        int type = AlarmManager.RTC_WAKEUP;
+        //new Date()：表示当前日期，可以根据项目需求替换成所求日期
+        //getTime()：日期的该方法同样可以表示从1970年1月1日0点至今所经历的毫秒数
+        long triggerAtMillis = new Date().getTime();
+        long intervalMillis = 1000 * 10;
+        manager.setInexactRepeating(type, triggerAtMillis, intervalMillis, pi);
     }
 
     public void login() {

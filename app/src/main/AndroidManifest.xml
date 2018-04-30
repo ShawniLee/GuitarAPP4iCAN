@@ -20,14 +20,12 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name="ex.guitartest.LoginActivity" />
-
-        <activity android:name="ex.guitartest.TeacherChooseActivity"/>
-        <activity android:name="ex.guitartest.VideoListActivity" />
-        <activity android:name="ex.guitartest.SplashScreenActivity"/>
-
-
-        <activity android:name=".teacher.TeacherHomeActivity"
+        <activity android:name=".LoginActivity" />
+        <activity android:name=".TeacherChooseActivity" />
+        <activity android:name=".VideoListActivity" />
+        <activity android:name=".SplashScreenActivity" />
+        <activity
+            android:name=".teacher.TeacherHomeActivity"
             android:launchMode="singleTask">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -35,15 +33,22 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-            <activity android:name=".teacher.MessageActivity"/>
-        <activity android:name=".teacher.ChatActivity"/>
-        <activity android:name=".VideoActivity"/>
-        <activity android:name=".teacher.VideoAddActivity"/>
+        <activity android:name=".teacher.MessageActivity" />
+        <activity android:name=".teacher.ChatActivity" />
+        <activity android:name=".VideoActivity" />
+        <activity android:name=".teacher.VideoAddActivity" />
 
-        <!--Student-->
-        <activity android:name=".student.StudentHomeActivity"/>
-        <activity android:name=".teacher.SpectrumWriteActivity"
-            android:theme="@style/ActivityTheme"/>
+        <!-- Student -->
+        <activity android:name=".student.StudentHomeActivity" />
+        <activity
+            android:name=".teacher.SpectrumWriteActivity"
+            android:theme="@style/ActivityTheme" />
+        <activity android:name=".teacher.PracticeResultActivity" />
+
+        <service
+            android:name=".AlarmService"
+            android:enabled="true"
+            android:exported="true"></service>
     </application>
 
 </manifest>

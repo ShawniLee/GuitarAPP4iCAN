@@ -85,8 +85,8 @@ public class SpectrumListAdapter extends BaseAdapter {
                 if (view == null){
                     view = inflater.inflate(R.layout.item_spectrum, parent, false);
                     holder = new CityViewHolder();
-                    holder.letter = view.findViewById(R.id.tv_letter);
-                    holder.name = view.findViewById(R.id.tv_name);
+                    holder.letter = (TextView) view.findViewById(R.id.tv_letter);
+                    holder.name = (TextView) view.findViewById(R.id.tv_name);
                     holder.view_divider =  view.findViewById(R.id.view_divider);
                     view.setTag(holder);
                 }else{
@@ -99,10 +99,10 @@ public class SpectrumListAdapter extends BaseAdapter {
                     if (!TextUtils.equals(currentLetter, previousLetter)){
                         holder.letter.setVisibility(View.VISIBLE);
                         holder.letter.setText(currentLetter);
-                        holder.view_divider.setVisibility(View.GONE);
+                        holder.view_divider.setVisibility(View.VISIBLE);
                     }else{
                         holder.letter.setVisibility(View.GONE);
-                        holder.view_divider.setVisibility(View.VISIBLE);
+                        holder.view_divider.setVisibility(View.GONE);
                     }
                     holder.name.setOnClickListener(new View.OnClickListener() {
                         @Override

@@ -1,10 +1,14 @@
 package ex.guitartest.teacher;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
@@ -32,7 +36,6 @@ import ex.guitartest.BlueTooth.RxBleService;
 import ex.guitartest.R;
 import ex.guitartest.bean.NumberClickModel;
 import ex.guitartest.bean.deleteModel;
-import ex.guitartest.util.SharedPreferencesUtil;
 import ex.guitartest.util.SizeSwitch;
 import ex.guitartest.viewutils.MusicNote;
 import ex.guitartest.viewutils.MusicNoteLayout;
@@ -64,15 +67,16 @@ public class SpectrumWriteActivity extends AppCompatActivity {
     private int splitNoteNum = 0;
     private String SplitData[] = new String[8];
     RxBle RxbleS = RxBle.getInstance();
-    private String[] chordMusicStrings = new String[]{"C", "C#", "D", "Em", "E", "F","G","F#", "Ab", "A", "Bb", "B"};//Em为Eb,G和F#调换了位置
+    private String[] chordMusicStrings = MusicNote.getChordMusicStrings();//Em为Eb,G和F#调换了位置
     private MusicNoteLayout musicNoteLayout;
     private RelativeLayout inputLayout;
     public RelativeLayout extraLayout;
     private RelativeLayout buttonLayout;
     private int inputBigMusicIndex = 0;
     private float defaultHight;
-    private int checkSpeed = 0;
-    private int checkPitch = 2;
+    private int checkSpeed = 2;
+    private int checkPitch = 1;
+    private int numOfMusic=0;
     int[] menu_image_array = {R.drawable.ic_menu_delete,
             R.drawable.ic_menu_save, R.drawable.ic_menu_preferences,
             R.drawable.ic_menu_help, R.drawable.ic_menu_info_details,
@@ -85,6 +89,36 @@ public class SpectrumWriteActivity extends AppCompatActivity {
     GridView menuGrid;
     View menuView;
     String sendMusic="";
+
+    //更新UI
+    private int numOfText =0;
+
+    @SuppressLint("HandlerLeak")
+    //TODO:应该将handle声明到外部类中
+    private Handler handler = new Handler()
+    {
+        public void handleMessage(android.os.Message msg) {
+            TextView bigMusicNoteText=findViewById(numOfText *6+2);
+            TextView pitchText=findViewById(numOfText *6+5);
+            TextView speedText=findViewById(numOfText* 6+6);
+            switch(msg.what)
+            {
+                case Color.RED:
+                        bigMusicNoteText.setTextColor(Color.RED);
+                        pitchText.setVisibility(View.VISIBLE);
+                        speedText.setVisibility(View.VISIBLE);
+                    break;
+                case Color.GREEN:
+                        bigMusicNoteText.setTextColor(Color.GREEN);
+                        pitchText.setVisibility(View.INVISIBLE);
+                        speedText.setVisibility(View.INVISIBLE);
+                    break;
+
+                default:
+                    break;
+            }
+        }
+    };
 
     private SharedPreferences settings;
     private boolean firstStart = true;
@@ -339,15 +373,59 @@ public class SpectrumWriteActivity extends AppCompatActivity {
                     sendMusic="@T"+ MusicNote.StoreMusicNote  +"#";
                     connectAndWrite(sendMusic);
                     break;
-                case 4:// 暂停
-//                    Intent intent = new Intent();
-//                    intent.setClass(SpectrumWriteActivity.this, DetailActivity.class);
-//                    SpectrumWriteActivity.this.startActivity(intent);
-                    RxbleS.sendData("@Tpause#".getBytes(),1000);
+                case 4:// 暂停 改隐藏控件
+                    //RxbleS.sendData("@Tpause#".getBytes(),1000);
+                    buttonLayout.setVisibility(View.INVISIBLE);
+                numOfMusic=musicNoteLayout.getStandardNumsSize();
+                for (int i=0;i<numOfMusic;i++)
+                {
+                    TextView pitchText=findViewById(i*6+5);
+                    TextView speedText=findViewById(i*6+6);
+                    pitchText.setVisibility(View.INVISIBLE);
+                    speedText.setVisibility(View.INVISIBLE);
+                }
                     break;
                 case 5:// 停止
-                    RxbleS.sendData("@Tstop#".getBytes(),1000);
-//                    appWallManager.show();
+                    numOfMusic=musicNoteLayout.getStandardNumsSize();
+                    //RxbleS.sendData("@Tstop#".getBytes(),1000);
+                    Runnable myRunnable= new Runnable() {
+                        public void run() {
+                            try {
+                                Thread.sleep(2000);
+                            for (int i = 0; i< numOfMusic; i++)
+                            {
+                                numOfText = i;
+                                Message message1 = Message.obtain();
+                                Message message2=Message.obtain();
+
+                                    if (i==1) {
+                                        message1.what = Color.RED;
+                                        handler.sendMessage(message1);
+                                        Thread.sleep(4000);
+                                        message2.what = Color.GREEN;
+                                        handler.sendMessage(message2);
+                                    }
+                                     else
+                                    {
+                                        message1.what = Color.RED;
+                                        handler.sendMessage(message1);
+                                        Thread.sleep(4000);
+                                        message2.what = Color.GREEN;
+                                        handler.sendMessage(message2);
+                                    }
+                                    Thread.sleep(2000);
+                                    }
+                            }
+                                catch (Exception e)
+                                {
+                                    e.printStackTrace();
+                                }
+
+
+                        }
+                    };
+                     Thread thread = new Thread(myRunnable);
+                    thread.start();
                     break;
             }
         }
@@ -448,12 +526,18 @@ public class SpectrumWriteActivity extends AppCompatActivity {
     public void onBackPressed()
     {
         super.onBackPressed();
-        RxbleS.sendData("@Tstop#".getBytes(),500);
+        Intent intent = new Intent(this, PracticeResultActivity.class);
+        startActivity(intent);
+        //RxbleS.sendData("@Tstop#".getBytes(),500);
+
     }
     private void setMusicNote(int inputBigMusicIndex,int num,int offset,int pitch,boolean chord,int checkSpeed,int checkPitch)
     {
         MusicNote musicNote = new MusicNote(inputBigMusicIndex, num,
                 offset, pitch,chord);
+        if(musicNote.getChord())
+            musicNoteLayout.drawMusicNoteInput(musicNote, num,checkSpeed,checkPitch);// 输入的调
+        else
         musicNoteLayout.drawMusicNoteInput(musicNote, inputBigMusicIndex,checkSpeed,checkPitch);// 输入的调
 
         if (musicNoteLayout.getStandardNums().size() > 1)
