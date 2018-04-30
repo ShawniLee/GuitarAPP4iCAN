@@ -99,6 +99,7 @@ public class SpectrumFragment extends Fragment {
                         dialog.dismiss();
                     }
                 }).create();
+
         spectrumListAdapter.setOnItemClickListener(new SpectrumListAdapter.OnItemClickListener() {
             @Override
             public void onClick(String name) {

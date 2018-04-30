@@ -36,15 +36,16 @@
             android:layout_marginRight="30dp"/>
 
         <TextView
+            android:id="@+id/nickname"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/civ_portrait"
             android:layout_marginLeft="120dp"
+            android:background="@null"
+
             android:singleLine="false"
             android:text="Mr.Liu"
-
             android:textColor="@color/text_deep"
-            android:background="@null"
             android:textSize="18sp" />
     </RelativeLayout>
     <View
@@ -239,17 +240,18 @@
             android:layout_marginRight="20dp"
             android:src="@drawable/more"
             android:layout_centerVertical="true"/>
+
         <TextView
-            android:layout_toLeftOf="@+id/iv_more_5"
+            android:id="@+id/occupation"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_marginRight="10dp"
-            android:textSize="14sp"
+            android:layout_toLeftOf="@+id/iv_more_5"
             android:background="@null"
-            android:textColor="@color/tab_unselect"
             android:text="请输入"
-            />
+            android:textColor="@color/tab_unselect"
+            android:textSize="14sp" />
     </RelativeLayout>
     <View
         android:layout_width="match_parent"
@@ -354,15 +356,15 @@
         android:layout_height="30dp"
         android:background="@color/white"
         >
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_marginLeft="20dp"
-            android:textSize="14sp"
+            android:text="练习情况统计"
             android:textColor="@color/tab_unselect"
-            android:text="通讯录"
-            />
+            android:textSize="14sp" />
         <ImageView
             android:layout_width="20dp"
             android:layout_height="20dp"
