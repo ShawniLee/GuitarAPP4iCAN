@@ -52,6 +52,7 @@ public class MyFragment extends Fragment {
     @BindView(R.id.occupation)
     TextView occupation;
     private int judgeClick = 0;
+    //TODO:优化掉judgeClick，当whichClick不为0时执行
 
 
     @Nullable
@@ -106,7 +107,8 @@ public class MyFragment extends Fragment {
                             case 5:
                                 if(!android.util.Patterns.EMAIL_ADDRESS.matcher(et.getText().toString()).matches())
                                 {
-                                    Toast.makeText(getActivity(), "请输入正确的Email", Toast.LENGTH_SHORT).show();
+                                    et.setError("请输入正确的Email");
+                                    return;
                                 }
                                 else
                                 email.setText(et.getText().toString());

@@ -4,9 +4,9 @@
     <string name="password">Password</string>
     <string name="login">登录</string>
     <string name="email">Email</string>
-    <string name="no_account_yet_create_one">首次使用？打开网站注册</string>
-    <string name="loginteacher">教师登录</string>
-    <string name="loginstudent">学生登录</string>
+    <string name="no_account_yet_create_one">您是教师？打开网站注册</string>
+    <string name="loginteacher">教师家长端</string>
+    <string name="loginstudent">学生客户端</string>
     <string name="folder">Guitar</string>
     <item name="visible" type="id" />
     <item name="masked" type="id" />
@@ -20,4 +20,6 @@
     <string name="tab_4">学生</string>
     <string name="tab_5">我的</string>
     <string name="chatStudentsName">李湘宁</string>
+    <string name="no_account_yet_create_one2">想学吉他？点击这里注册</string>
+    <string name="studentHadSignUpHint">已经有账户了？点击这里登录</string>
 </resources>

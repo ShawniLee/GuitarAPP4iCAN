@@ -262,6 +262,7 @@ public class MusicNoteLayout {
         checkPitchUpView.setBackgroundColor(inputColor);
         checkPitchUpView.setTextColor(Color.RED);
         checkPitchUpView.setGravity(Gravity.CENTER);
+        checkPitchUpView.setVisibility(View.INVISIBLE);
         layout.addView(checkPitchUpView);
 
         TextView checkSpeedOKView = new TextView(activity);
@@ -275,6 +276,7 @@ public class MusicNoteLayout {
         checkSpeedOKView.setBackgroundColor(inputColor);
         checkSpeedOKView.setTextColor(Color.RED);
         checkSpeedOKView.setGravity(Gravity.CENTER);
+        checkSpeedOKView.setVisibility(View.INVISIBLE);
         layout.addView(checkSpeedOKView);
 
         standardNums.add(line * indexCursorRow + indexCursorLine,
