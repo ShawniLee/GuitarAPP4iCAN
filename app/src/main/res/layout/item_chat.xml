@@ -42,14 +42,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="14sp"
-                android:text="学生A"
+                android:text="@string/chatStudentsName"
                 android:textColor="@color/text_deep"/>
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="12sp"
                 android:layout_alignParentBottom="true"
-                android:text="03/13 08:59"/>
+                android:text="04/13 08:59"/>
         </RelativeLayout>
     </LinearLayout>
 

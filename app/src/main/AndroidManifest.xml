@@ -23,16 +23,17 @@
         <activity android:name=".LoginActivity" />
         <activity android:name=".TeacherChooseActivity" />
         <activity android:name=".VideoListActivity" />
-        <activity android:name=".SplashScreenActivity" />
+        <activity android:name=".SplashScreenActivity" >
+        <intent-filter>
+        <action android:name="android.intent.action.MAIN" />
+
+        <category android:name="android.intent.category.LAUNCHER" />
+    </intent-filter>
+    </activity>
         <activity
             android:name=".teacher.TeacherHomeActivity"
-            android:launchMode="singleTask">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+            android:launchMode="singleTask"/>
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
         <activity android:name=".teacher.MessageActivity" />
         <activity android:name=".teacher.ChatActivity" />
         <activity android:name=".VideoActivity" />
