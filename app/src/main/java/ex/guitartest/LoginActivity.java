@@ -47,6 +47,9 @@ public class LoginActivity extends AppCompatActivity {
     TextView _signupLink;
     @BindView(R.id.link_signup2)
     TextView linkSignup2;
+    String SignUpEmail;
+    String SignUpPassword;
+    String SignedUpPhoneNumber;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -114,7 +117,8 @@ public class LoginActivity extends AppCompatActivity {
         // TODO: Implement your own authentication logic here.
         boolean a = switchButton.isChecked();
         if (email.equals("t@ustb.com") && password.equals("123") && !switchButton.isChecked() ||
-                email.equals("s@ustb.com") && password.equals("123") && switchButton.isChecked())
+                email.equals("s@ustb.com") && password.equals("123") && switchButton.isChecked()||
+                email.equals(SignUpEmail)||email.equals(SignedUpPhoneNumber)&&password.equals(SignUpPassword))
             new Handler().postDelayed(
                     new Runnable() {
                         public void run() {
@@ -138,10 +142,13 @@ public class LoginActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_SIGNUP) {
             if (resultCode == RESULT_OK) {
-
+                     SignedUpPhoneNumber=data.getStringExtra("SignUpName");
+                    SignUpEmail=data.getStringExtra("SignUpEmail");
+                    SignUpPassword=data.getStringExtra("SignUpPassword");
+                    _emailText.setText(SignedUpPhoneNumber);
+                    _passwordText.setText("");
                 // TODO: Implement successful signup logic here
                 // By default we just finish the Activity and log them in automatically
-                this.finish();
             }
         }
     }
@@ -177,9 +184,12 @@ public class LoginActivity extends AppCompatActivity {
         String email = _emailText.getText().toString();
         String password = _passwordText.getText().toString();
 
-        if (email.isEmpty() || !Patterns.EMAIL_ADDRESS.matcher(email).matches()||email.length()!=11) {
-            _emailText.setError("Email地址或手机号码无效");/*enter a valid email address*/
-            valid = false;
+        if (email.isEmpty() || !Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            if (email.length()!=11) {
+                _emailText.setError("Email地址或手机号码无效");/*enter a valid email address*/
+                valid = false;
+            }
+            else _emailText.setError(null);
         } else {
             _emailText.setError(null);
         }

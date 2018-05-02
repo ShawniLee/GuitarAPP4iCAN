@@ -1,5 +1,6 @@
 package ex.guitartest;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
@@ -83,7 +84,11 @@ public class SignUpActivity extends AppCompatActivity {
 
     public void onSignupSuccess() {
         _signupButton.setEnabled(true);
-        setResult(RESULT_OK, null);
+        Intent intent=new Intent();
+        intent.putExtra("SignUpName",_nameText.getText().toString());
+        intent.putExtra("SignUpEmail",_emailText.getText().toString());
+        intent.putExtra("SignUpPassword",_passwordText.getText().toString());
+        setResult(RESULT_OK, intent);
         finish();
     }
 

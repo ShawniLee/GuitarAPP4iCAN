@@ -22,4 +22,5 @@
     <string name="chatStudentsName">李湘宁</string>
     <string name="no_account_yet_create_one2">想学吉他？点击这里注册</string>
     <string name="studentHadSignUpHint">已经有账户了？点击这里登录</string>
+    <string name="description_define_in_xml">乐谱同步中</string>
 </resources>
