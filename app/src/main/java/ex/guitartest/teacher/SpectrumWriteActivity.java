@@ -44,7 +44,7 @@ import ex.guitartest.viewutils.MusicNoteLayout;
  *
  * Created by qyxlx on 2018/3/15.
  */
-
+//TODO:低音降do有bug，会导致程序崩溃
 public class SpectrumWriteActivity extends AppCompatActivity {
     @BindView(R.id.button7)
     Button button7;
