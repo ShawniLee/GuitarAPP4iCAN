@@ -2,7 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/GuitarTest.iml" filepath="$PROJECT_DIR$/GuitarTest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/GuitarTeacher.iml" filepath="$PROJECT_DIR$/GuitarTeacher.iml" />
+      <module fileurl="file://C:\Application\GuitarTeacher\GuitarTest.iml" filepath="C:\Application\GuitarTeacher\GuitarTest.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>
   </component>
