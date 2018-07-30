@@ -352,81 +352,41 @@ public class SpectrumWriteActivity extends AppCompatActivity {
             switch (arg2) {
                 case 0:// 清空
                     promptDialog.show();
-                MusicNote.cleanAll();
+                    MusicNote.cleanAll();
                     break;
                 case 1:// 单个音符
 
-                   // Toast.makeText(SpectrumWriteActivity.this, "抱歉，暂不支持保存功能！",
-                   //         Toast.LENGTH_SHORT).show();
-                    sendMusic="@TS"+ MusicNote.StoreMusicNote +"#";
-                    RxbleS.sendData(sendMusic.getBytes(),1000);
+                    // Toast.makeText(SpectrumWriteActivity.this, "抱歉，暂不支持保存功能！",
+                    //         Toast.LENGTH_SHORT).show();
+                    sendMusic = "@TS" + MusicNote.StoreMusicNote + "#";
+                    RxbleS.sendData(sendMusic.getBytes(), 1000);
                     break;
                 case 2:// 乐曲慢弹
                     // musicNoteLayout.update(40,4);
                     //Toast.makeText(SpectrumWriteActivity.this, "您可以在主界面上设置音符尺寸与模式",
                     //      Toast.LENGTH_SHORT).show();
-                    sendMusic="@T"+ MusicNote.StoreMusicNote  +"#";
+                    sendMusic = "@T" + MusicNote.StoreMusicNote + "#";
                     connectAndWrite(sendMusic);
                     break;
                 case 3:// 乐曲连弹
                     //helpDialog.show();
-                    sendMusic="@T"+ MusicNote.StoreMusicNote  +"#";
+                    sendMusic = "@T" + MusicNote.StoreMusicNote + "#";
                     connectAndWrite(sendMusic);
                     break;
                 case 4:// 暂停 改隐藏控件
-                    //RxbleS.sendData("@Tpause#".getBytes(),1000);
+                    RxbleS.sendData("@Tpause#".getBytes(),1000);
                     buttonLayout.setVisibility(View.INVISIBLE);
-                numOfMusic=musicNoteLayout.getStandardNumsSize();
-                for (int i=0;i<numOfMusic;i++)
-                {
-                    TextView pitchText=findViewById(i*6+5);
-                    TextView speedText=findViewById(i*6+6);
-                    pitchText.setVisibility(View.INVISIBLE);
-                    speedText.setVisibility(View.INVISIBLE);
-                }
+                    numOfMusic = musicNoteLayout.getStandardNumsSize();
+                    for (int i = 0; i < numOfMusic; i++) {
+                        TextView pitchText = findViewById(i * 6 + 5);
+                        TextView speedText = findViewById(i * 6 + 6);
+                        pitchText.setVisibility(View.INVISIBLE);
+                        speedText.setVisibility(View.INVISIBLE);
+                    }
                     break;
                 case 5:// 停止
-                    numOfMusic=musicNoteLayout.getStandardNumsSize();
-                    //RxbleS.sendData("@Tstop#".getBytes(),1000);
-                    Runnable myRunnable= new Runnable() {
-                        public void run() {
-                            try {
-                                Thread.sleep(2000);
-                            for (int i = 0; i< numOfMusic; i++)
-                            {
-                                numOfText = i;
-                                Message message1 = Message.obtain();
-                                Message message2=Message.obtain();
-
-                                    if (i==1) {
-                                        message1.what = Color.RED;
-                                        handler.sendMessage(message1);
-                                        Thread.sleep(4000);
-                                        message2.what = Color.GREEN;
-                                        handler.sendMessage(message2);
-                                    }
-                                     else
-                                    {
-                                        message1.what = Color.RED;
-                                        handler.sendMessage(message1);
-                                        Thread.sleep(4000);
-                                        message2.what = Color.GREEN;
-                                        handler.sendMessage(message2);
-                                    }
-                                    Thread.sleep(2000);
-                                    }
-                            }
-                                catch (Exception e)
-                                {
-                                    e.printStackTrace();
-                                }
-
-
-                        }
-                    };
-                     Thread thread = new Thread(myRunnable);
-                    thread.start();
-                    break;
+                    numOfMusic = musicNoteLayout.getStandardNumsSize();
+                    RxbleS.sendData("@Tstop#".getBytes(),1000);
             }
         }
     }
@@ -489,38 +449,39 @@ public class SpectrumWriteActivity extends AppCompatActivity {
         setMusicNote(inputBigMusicIndex,num,offset,pitch,chord,checkSpeed,checkPitch);
     }
     private void connectAndWrite(final String TotalData) {
-        splitNoteNum =0;
-        if (TotalData.length()>=20)
-        {
-            for (int j=0;j<TotalData.length();j+=19, splitNoteNum++)
-            {
-                if(j+19<TotalData.length())
-                    SplitData[splitNoteNum]=TotalData.substring(j,j+19);
-                else {
-                    SplitData[splitNoteNum] = TotalData.substring(j, TotalData.length());
-                    break;
-                }
-            }
-        }
-        else SplitData[0]=TotalData;
-        Runnable myRunnable= new Runnable() {
-            public void run() {
-                for (int j = 0; j<= splitNoteNum; j++)
-                {
-                    try {
-                        RxbleS.sendData(SplitData[j].getBytes(),1000);
-                        Thread.sleep(1000);
-                    }
-                    catch (Exception e)
-                    {
-                        e.printStackTrace();
-                    }
-                }
-
-            }
-        };
-        Thread thread = new Thread(myRunnable);
-        thread.start();
+//        splitNoteNum =0;
+//        if (TotalData.length()>=20)
+//        {
+//            for (int j=0;j<TotalData.length();j+=19, splitNoteNum++)
+//            {
+//                if(j+19<TotalData.length())
+//                    SplitData[splitNoteNum]=TotalData.substring(j,j+19);
+//                else {
+//                    SplitData[splitNoteNum] = TotalData.substring(j, TotalData.length());
+//                    break;
+//                }
+//            }
+//        }
+//        else SplitData[0]=TotalData;
+//        Runnable myRunnable= new Runnable() {
+//            public void run() {
+//                for (int j = 0; j<= splitNoteNum; j++)
+//                {
+//                    try {
+//                        RxbleS.sendData(SplitData[j].getBytes(),1000);
+//                        Thread.sleep(1000);
+//                    }
+//                    catch (Exception e)
+//                    {
+//                        e.printStackTrace();
+//                    }
+//                }
+//
+//            }
+//        };
+//        Thread thread = new Thread(myRunnable);
+//        thread.start();
+        RxbleS.sendData(TotalData.getBytes(),1200);
     }
     @Override
     public void onBackPressed()

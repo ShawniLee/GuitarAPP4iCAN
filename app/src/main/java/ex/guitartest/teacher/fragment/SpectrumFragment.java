@@ -163,7 +163,7 @@ public class SpectrumFragment extends Fragment {
                 TotalString = preCode + "starlet" + "#";
                 break;
             case "童年":
-                TotalString = preCode + "childhood" + "#";
+                TotalString = preCode  + "childhood" + "#";
                 break;
             case "贝加尔湖畔":
                 Intent intent = new Intent(getActivity(), SpectrumWriteActivity.class);
