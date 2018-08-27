@@ -6,7 +6,6 @@ import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -16,6 +15,8 @@ import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -23,6 +24,7 @@ import com.suke.widget.SwitchButton;
 import com.yanzhenjie.permission.AndPermission;
 import com.yanzhenjie.permission.PermissionListener;
 
+import java.io.IOException;
 import java.util.List;
 
 import butterknife.BindView;
@@ -31,8 +33,13 @@ import butterknife.OnClick;
 import ex.guitartest.BlueTooth.RxBleService;
 import ex.guitartest.student.StudentHomeActivity;
 import ex.guitartest.teacher.TeacherHomeActivity;
-
-import static android.content.Intent.ACTION_VIEW;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.FormBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 public class LoginActivity extends AppCompatActivity {
     private static final String TAG = "LoginActivity";
@@ -43,21 +50,31 @@ public class LoginActivity extends AppCompatActivity {
     EditText _passwordText;
     @BindView(R.id.btn_login)
     Button _loginButton;
-    @BindView(R.id.link_signup)
-    TextView _signupLink;
     @BindView(R.id.link_signup2)
     TextView linkSignup2;
     String SignUpEmail;
     String SignUpPassword;
     String SignedUpPhoneNumber;
-
+    @BindView(R.id.radioButton)
+    RadioButton radioButton;
+    @BindView(R.id.radioButton2)
+    RadioButton radioButton2;
+    @BindView(R.id.radioButton3)
+    RadioButton radioButton3;
+    @BindView(R.id.ClientChoose)
+    RadioGroup ClientChoose;
+    int chooseWho=1;
+    OkHttpClient client = new OkHttpClient();
+    String email;
+    String password;
+    boolean loginResult=false;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-        _emailText.setText("s@ustb.com");
-        _passwordText.setText("123");
+        _emailText.setText("s@ustb.edu.cn");
+        _passwordText.setText("123456");
         _loginButton.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -66,15 +83,6 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
-        _signupLink.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                // Start the Signup activity
-                Uri uri = Uri.parse("http://www.baidu.com");
-                startActivity(new Intent(ACTION_VIEW, uri));
-            }
-        });
         AndPermission.with(this).permission(
                 Manifest.permission.BLUETOOTH,
                 Manifest.permission.BLUETOOTH_ADMIN,
@@ -94,6 +102,24 @@ public class LoginActivity extends AppCompatActivity {
         if (manager != null) {
             manager.set(type, intervalMillis, pi);
         } else Log.d("AlarmServer", "Error");
+        ClientChoose.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup radioGroup, int i) {
+                switch (i){
+                    case R.id.radioButton:
+                        chooseWho=1;
+                        break;
+                    case R.id.radioButton2:
+                        chooseWho=2;
+                        break;
+                    case R.id.radioButton3:
+                        chooseWho=3;
+                        break;
+                        default:
+                            Log.d(TAG,"Error at RadioGroup");
+                }
+            }
+        });
     }
 
     public void login() {
@@ -110,31 +136,55 @@ public class LoginActivity extends AppCompatActivity {
         progressDialog.setIndeterminate(true);
         progressDialog.setMessage("Authenticating...");
         progressDialog.show();
+        email = _emailText.getText().toString();
+        password = _passwordText.getText().toString();
+        new Handler().postDelayed(
+                new Runnable() {
+                    public void run() {
+        RequestBody requestBody = new FormBody.Builder()
+                .add("a", "authenticate")
+                .add("username", email)
+                .add("password",password)
+                .build();
+        Request request = new Request.Builder()
+                .url(" http://sguitar.mybeike.com/api/user.php")
+                .post(requestBody)
+                .build();
 
-        String email = _emailText.getText().toString();
-        String password = _passwordText.getText().toString();
-        SwitchButton switchButton = findViewById(R.id.switch_button);
-        // TODO: Implement your own authentication logic here.
-        boolean a = switchButton.isChecked();
-        if (email.equals("t@ustb.com") && password.equals("123") && !switchButton.isChecked() ||
-                email.equals("s@ustb.com") && password.equals("123") && switchButton.isChecked()||
-                email.equals(SignUpEmail)||email.equals(SignedUpPhoneNumber)&&password.equals(SignUpPassword))
+        Call call = client.newCall(request);
+        call.enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.d(TAG, "onFailure:Login");
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String tempResponse=response.body().string();
+                Log.d(TAG,tempResponse);
+                loginResult = tempResponse.equals("1");
+                progressDialog.dismiss();
+
+                if (loginResult) {
+                    onLoginSuccess();
+                }
+                else {
+                    onLoginFailed();
+                }
+            }
+        });
+                    }
+                }, 500);//优化点
             new Handler().postDelayed(
                     new Runnable() {
                         public void run() {
                             // On complete call either onLoginSuccess or onLoginFailed
-                            onLoginSuccess();
-                            progressDialog.dismiss();
+                            _loginButton.setEnabled(true);
+
                         }
-                    }, 1000);
-        else
-            new Handler().postDelayed(
-                    new Runnable() {
-                        public void run() {
-                            onLoginFailed();
-                            progressDialog.dismiss();
-                        }
-                    }, 1000);
+                    }, 2000);
+
+
     }
 
 
@@ -142,11 +192,9 @@ public class LoginActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_SIGNUP) {
             if (resultCode == RESULT_OK) {
-                     SignedUpPhoneNumber=data.getStringExtra("SignUpName");
-                    SignUpEmail=data.getStringExtra("SignUpEmail");
-                    SignUpPassword=data.getStringExtra("SignUpPassword");
-                    _emailText.setText(SignedUpPhoneNumber);
-                    _passwordText.setText("");
+                SignUpEmail = data.getStringExtra("SignUpEmail");
+                _emailText.setText(SignUpEmail);
+                _passwordText.setText("");
                 // TODO: Implement successful signup logic here
                 // By default we just finish the Activity and log them in automatically
             }
@@ -160,22 +208,28 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public void onLoginSuccess() {
-        _loginButton.setEnabled(true);
-        SwitchButton switchButton = findViewById(R.id.switch_button);
-        if (switchButton.isChecked()) {
+
+        if (chooseWho==1) {
             Intent intent = new Intent(this, TeacherHomeActivity.class);
             startActivity(intent);
-        } else {
+        } else if(chooseWho==2) {
             Intent intent = new Intent(this, StudentHomeActivity.class);
+            startActivity(intent);
+        }
+        else {
+            Intent intent = new Intent(this, ParentsActicvity.class);
             startActivity(intent);
         }
         finish();
     }
 
     public void onLoginFailed() {
-        Toast.makeText(getBaseContext(), "Login failed", Toast.LENGTH_LONG).show();
-
-        _loginButton.setEnabled(true);
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(getBaseContext(), "Login failed", Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
     public boolean validate() {
@@ -185,11 +239,10 @@ public class LoginActivity extends AppCompatActivity {
         String password = _passwordText.getText().toString();
 
         if (email.isEmpty() || !Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            if (email.length()!=11) {
+            if (email.length() != 11) {
                 _emailText.setError("Email地址或手机号码无效");/*enter a valid email address*/
                 valid = false;
-            }
-            else _emailText.setError(null);
+            } else _emailText.setError(null);
         } else {
             _emailText.setError(null);
         }

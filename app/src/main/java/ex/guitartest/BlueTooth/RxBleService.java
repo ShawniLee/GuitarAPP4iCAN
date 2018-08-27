@@ -30,7 +30,7 @@ public class RxBleService extends Service {
         public void onBleScan(BluetoothDevice bleDevice, int rssi, byte[] scanRecord) {
             //LeScan have set default scanType to Le
             if (bleDevice.getBondState() != BluetoothDevice.BOND_BONDED && bleDevice.getBondState() != BluetoothDevice.BOND_BONDING) {
-                if ((maddress!=null&&maddress.equals(bleDevice.getAddress())) || bleDevice.getName().contains("AeroBand"))
+                if ((maddress!=null&&maddress.equals(bleDevice.getAddress())) || bleDevice.getName().contains("Smart_Guitar"))
                 {
                     Log.d(TAG,"find device!");
                     mrxBle.connectDevice(bleDevice);
@@ -143,6 +143,7 @@ public class RxBleService extends Service {
                     //TODO: receive
                 }
             });
+
     }
 
     /**

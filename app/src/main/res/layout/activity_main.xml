@@ -64,46 +64,50 @@
         <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
             xmlns:app="http://schemas.android.com/apk/res-auto"
             android:layout_width="match_parent"
-            android:layout_height="30dp"
-            android:orientation="horizontal">
+            android:layout_height="0dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_weight="1"
+            android:elevation="0dp"
+            android:gravity="fill_vertical|center"
+            android:orientation="horizontal"
+            android:weightSum="1">
 
-            <TextView
-                android:id="@+id/textView"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="4"
+            <RadioGroup
+                android:id="@+id/ClientChoose"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:gravity="center_vertical"
-                android:text="@string/loginteacher"
-                android:textAlignment="center" />
+                android:orientation="horizontal"
+                android:checkedButton="@+id/radioButton">
 
-            <com.suke.widget.SwitchButton
-                android:id="@+id/switch_button"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="2"
-                app:sb_checked="true"
-                app:sb_checked_color="@color/colorPrimary" />
 
-            <TextView
-                android:id="@+id/textView2"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="4"
-                android:gravity="center_vertical"
-                android:text="@string/loginstudent"
-                android:textAlignment="center" />
+                <RadioButton
+                    android:id="@+id/radioButton"
+                    android:layout_width="76dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="教师" />
+
+                <RadioButton
+                    android:id="@+id/radioButton2"
+                    android:layout_width="81dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:text="学生" />
+
+                <RadioButton
+                    android:id="@+id/radioButton3"
+                    android:layout_width="85dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:paddingEnd="5dp"
+                    android:text="家长" />
+            </RadioGroup>
 
         </LinearLayout>
-
-        <TextView
-            android:id="@+id/link_signup"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="30dp"
-            android:gravity="center"
-            android:padding="10dp"
-            android:text="@string/no_account_yet_create_one"
-            android:textSize="16sp" />
 
         <TextView
             android:id="@+id/link_signup2"

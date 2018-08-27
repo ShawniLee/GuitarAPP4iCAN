@@ -32,7 +32,6 @@ public class RxBle {
     public static final String TX_CHAR_UUID = "6e400003-b5a3-f393-e0a9-e50e24dcca9e";
     private static final long SCAN_PERIOD = 5000;
     private static final String TAG = RxBle.class.getSimpleName();
-    private static final String UUID = "0000ffe1-0000-1000-8000-00805f9b34fb";
     private Context mContext;
 
     private String CONNECTION_STATE;

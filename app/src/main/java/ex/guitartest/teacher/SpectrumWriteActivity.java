@@ -1,16 +1,14 @@
 package ex.guitartest.teacher;
 
-import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.View;
@@ -22,6 +20,7 @@ import android.widget.Button;
 import android.widget.GridView;
 import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
+import android.widget.SeekBar;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -29,6 +28,13 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import be.tarsos.dsp.AudioDispatcher;
+import be.tarsos.dsp.AudioEvent;
+import be.tarsos.dsp.AudioProcessor;
+import be.tarsos.dsp.io.android.AudioDispatcherFactory;
+import be.tarsos.dsp.pitch.PitchDetectionHandler;
+import be.tarsos.dsp.pitch.PitchDetectionResult;
+import be.tarsos.dsp.pitch.PitchProcessor;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import ex.guitartest.BlueTooth.RxBle;
@@ -37,15 +43,17 @@ import ex.guitartest.R;
 import ex.guitartest.bean.NumberClickModel;
 import ex.guitartest.bean.deleteModel;
 import ex.guitartest.util.SizeSwitch;
+import ex.guitartest.viewutils.AudioCheckNote;
+import ex.guitartest.viewutils.AudioNote;
 import ex.guitartest.viewutils.MusicNote;
 import ex.guitartest.viewutils.MusicNoteLayout;
 
 /**
- *
  * Created by qyxlx on 2018/3/15.
  */
 //TODO:低音降do有bug，会导致程序崩溃
 public class SpectrumWriteActivity extends AppCompatActivity {
+    private static final String TAG = "Spectrum";
     @BindView(R.id.button7)
     Button button7;
     @BindView(R.id.button4)
@@ -60,65 +68,44 @@ public class SpectrumWriteActivity extends AppCompatActivity {
     Button button2;
     @BindView(R.id.button1)
     Button button1;
+    @BindView(R.id.SpeedBar)
+    SeekBar SpeedBar;
     private int pitch = 0; // 音高,1为高音，-1为低音
     private int offset = 0; // 升降
     private boolean chord = false;//默认0为指弹，1为和弦
+    private final double speedCheckAccuracy=2;
     private int num = 1;
-    private int splitNoteNum = 0;
-    private String SplitData[] = new String[8];
+    final int ERROR_NUM = 999;
+    int currentMusicNoteIndex = 0;
+    int currentAudioNoteIndex = 0;
     RxBle RxbleS = RxBle.getInstance();
     private String[] chordMusicStrings = MusicNote.getChordMusicStrings();//Em为Eb,G和F#调换了位置
     private MusicNoteLayout musicNoteLayout;
     private RelativeLayout inputLayout;
     public RelativeLayout extraLayout;
     private RelativeLayout buttonLayout;
-    private int inputBigMusicIndex = 0;
     private float defaultHight;
-    private int checkSpeed = 2;
-    private int checkPitch = 1;
-    private int numOfMusic=0;
+    AudioDispatcher dispatcher;
+    AudioProcessor audioProcessor;
+    Thread audioThread;
+    private int numOfMusic = 0;
     int[] menu_image_array = {R.drawable.ic_menu_delete,
             R.drawable.ic_menu_save, R.drawable.ic_menu_preferences,
             R.drawable.ic_menu_help, R.drawable.ic_menu_info_details,
             R.drawable.ic_menu_favorite};
     //菜单文字
-    String[] menu_name_array = {"清空","单个音符", "乐曲慢弹", "乐曲连弹", "暂停", "停止" };
+    String[] menu_name_array = {"清空", "单个音符", "乐曲慢弹", "播放", "暂停", "停止"};
     AlertDialog menuDialog;// menu菜单Dialog
     AlertDialog promptDialog; // 提示对话框
     AlertDialog helpDialog;
     GridView menuGrid;
     View menuView;
-    String sendMusic="";
+    String sendMusic = "";
+    private int speed;
 
     //更新UI
-    private int numOfText =0;
+    private int numOfText = 0;
 
-    @SuppressLint("HandlerLeak")
-    //TODO:应该将handle声明到外部类中
-    private Handler handler = new Handler()
-    {
-        public void handleMessage(android.os.Message msg) {
-            TextView bigMusicNoteText=findViewById(numOfText *6+2);
-            TextView pitchText=findViewById(numOfText *6+5);
-            TextView speedText=findViewById(numOfText* 6+6);
-            switch(msg.what)
-            {
-                case Color.RED:
-                        bigMusicNoteText.setTextColor(Color.RED);
-                        pitchText.setVisibility(View.VISIBLE);
-                        speedText.setVisibility(View.VISIBLE);
-                    break;
-                case Color.GREEN:
-                        bigMusicNoteText.setTextColor(Color.GREEN);
-                        pitchText.setVisibility(View.INVISIBLE);
-                        speedText.setVisibility(View.INVISIBLE);
-                    break;
-
-                default:
-                    break;
-            }
-        }
-    };
 
     private SharedPreferences settings;
     private boolean firstStart = true;
@@ -132,8 +119,29 @@ public class SpectrumWriteActivity extends AppCompatActivity {
         this.startService(intent);
         initResources();
         initView();
+        initData();
         RxbleS.setTargetDevice("Smart_guitar");
         RxbleS.scanBleDevices(true);
+        Log.e(TAG, "onCreate: dispatcher is running");
+        dispatcher = AudioDispatcherFactory.fromDefaultMicrophone(44100, 2048, 0);
+        dispatcher.addAudioProcessor(audioProcessor);
+        audioThread = new Thread(dispatcher, "Audio Dispatcher");
+        audioThread.start();
+        SpeedBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                speed=i+1;
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
     }
 
     @Override
@@ -153,7 +161,7 @@ public class SpectrumWriteActivity extends AppCompatActivity {
     }
 
     private void initResources() {
-        settings = getSharedPreferences("test", MODE_PRIVATE);
+        settings = getSharedPreferences("AudioInput", MODE_PRIVATE);
         firstStart = settings.getBoolean("firstStart", true);
         SharedPreferences.Editor prefEditor = settings.edit();
         prefEditor.putBoolean("firstStart", false);
@@ -230,6 +238,134 @@ public class SpectrumWriteActivity extends AppCompatActivity {
         helpDialog = builder_help.create();
     }
 
+    private void initData() {
+        AudioNote.AudioGetMusicNoteStored.clear();
+        MusicNote.MusicNoteStored.clear();
+        currentMusicNoteIndex = 0;
+        currentAudioNoteIndex = 0;
+        speed=3;
+        audioProcessor = new PitchProcessor(PitchProcessor.PitchEstimationAlgorithm.YIN, 44100, 2048, new PitchDetectionHandler() {
+
+            @Override
+            public void handlePitch(PitchDetectionResult pitchDetectionResult,
+                                    AudioEvent audioEvent) {
+                float pitchInHz = pitchDetectionResult.getPitch();
+
+                int IndexNote = ERROR_NUM;
+                for (int i = 0; i < MusicNote.getStandardNoteHz(); i++) {
+                    if (pitchInHz > MusicNote.getStandardNoteHz(i) - 3 && pitchInHz < MusicNote.getStandardNoteHz(i) + 3) {
+                        IndexNote = i - 12;
+                        break;
+                    }
+                    if (pitchInHz < MusicNote.getStandardNoteHz(i)) {
+                        break;
+                    }
+                }
+                if (IndexNote == ERROR_NUM) {
+                    return;
+                }
+                if (currentMusicNoteIndex < MusicNote.MusicNoteStored.size()
+                        && MusicNote.MusicNoteStored.size() != 0) {
+//音符数量还没到已经存储的上限
+                    if (AudioNote.AudioGetMusicNoteStored.size() > 0 &&
+                            (AudioNote.getLastAudioListStandardNum() != IndexNote
+                                    ||currentMusicNoteIndex == 0 || MusicNote.getMusicStanardNum(currentMusicNoteIndex)
+                                    == MusicNote.getMusicStanardNum(currentMusicNoteIndex - 1))
+                            || AudioNote.AudioGetMusicNoteStored.size() == 0) {
+                        AudioNote.AudioGetMusicNoteStored.add(
+                                new AudioNote(IndexNote, AudioNote.calcLastCurrentTimeDiff()));
+
+                        Log.d("AudioNote", String.valueOf(AudioNote.getLastAudioListStandardNum()));
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (MusicNote.MusicNoteStored.size() > currentMusicNoteIndex) {
+                                    int tempMusicStandard = MusicNote.
+                                            deCodeStoreMusicPitch2Standard(currentMusicNoteIndex);
+                                    if (AudioNote.AudioGetMusicNoteStored.get(currentAudioNoteIndex).standardNum == tempMusicStandard) {
+                                        //弹对了,就是下一个音
+                                        if (currentMusicNoteIndex == 0 || Math.abs(MusicNote.getMusicStandardTime(currentMusicNoteIndex) -
+                                                AudioNote.getAudioStandardTime(currentAudioNoteIndex)) < MusicNote.getMusicStandardTime(currentMusicNoteIndex) / speedCheckAccuracy) {
+                                            TextView textMusicNote = findViewById(currentMusicNoteIndex * 6 + 2);
+                                            textMusicNote.setTextColor(Color.GREEN);
+                                            Log.d("AudioMusic", "That's right");
+                                            //时间也没问题
+                                        } else {
+                                            //时间有问题
+                                            TextView textMusicNote = findViewById(currentMusicNoteIndex * 6 + 2);
+                                            textMusicNote.setTextColor(Color.GREEN);
+                                            TextView checkSpeedTextView = inputLayout.findViewById(currentMusicNoteIndex * 6 + 6);
+                                            checkSpeedTextView.setVisibility(View.VISIBLE);
+                                            if (MusicNote.getMusicStandardTime(currentMusicNoteIndex) >
+                                                    AudioNote.getAudioStandardTime(currentAudioNoteIndex)) {
+                                                //当前时间长了，弹慢了
+                                                checkSpeedTextView.setText(AudioCheckNote.getCheckPlayStrings(AudioCheckNote.slow));
+                                            } else {
+                                                checkSpeedTextView.setText(AudioCheckNote.getCheckPlayStrings(AudioCheckNote.fast));
+                                            }
+
+                                        }
+                                    } else if (MusicNote.MusicNoteStored.size() > currentMusicNoteIndex + 1
+                                            && AudioNote.AudioGetMusicNoteStored.get(currentAudioNoteIndex).standardNum ==
+                                            MusicNote.deCodeStoreMusicPitch2Standard(currentMusicNoteIndex + 1)) {
+                                        Log.d("AudioMusic", "Is  the Next Music Note?");
+                                        //是下下个音
+                                        TextView textMusicNote = findViewById(currentMusicNoteIndex * 6 + 2);
+                                        textMusicNote.setTextColor(Color.RED);
+                                        currentMusicNoteIndex++;
+                                        if (Math.abs(MusicNote.getMusicStandardTime(currentMusicNoteIndex) -
+                                                AudioNote.getAudioStandardTime(currentAudioNoteIndex)) < MusicNote.getMusicStandardTime(currentMusicNoteIndex)/speedCheckAccuracy) {
+                                            textMusicNote = findViewById(currentMusicNoteIndex * 6 + 2);
+                                            textMusicNote.setTextColor(Color.GREEN);
+                                            //时间也没问题
+                                        } else {
+                                            //时间有问题
+                                            textMusicNote = findViewById(currentMusicNoteIndex * 6 + 2);
+                                            textMusicNote.setTextColor(Color.GREEN);
+                                            TextView checkSpeedTextView = inputLayout.findViewById(currentMusicNoteIndex * 6 + 6);
+                                            checkSpeedTextView.setVisibility(View.VISIBLE);
+                                            if (MusicNote.getMusicStandardTime(currentAudioNoteIndex) >
+                                                    AudioNote.getAudioStandardTime(currentMusicNoteIndex)) {
+                                                //当前时间长了，弹慢了
+                                                checkSpeedTextView.setText(AudioCheckNote.getCheckPlayStrings(AudioCheckNote.slow));
+                                            } else {
+                                                checkSpeedTextView.setText(AudioCheckNote.getCheckPlayStrings(AudioCheckNote.fast));
+                                            }
+                                        }
+                                    } else {
+                                        //没找到这个音
+                                        if (Math.abs(MusicNote.getMusicStandardTime(currentMusicNoteIndex) -
+                                                AudioNote.getAudioStandardTime(currentAudioNoteIndex)) < MusicNote.getMusicStandardTime(currentMusicNoteIndex)/speedCheckAccuracy) {
+                                            //时间没问题
+                                            TextView textMusicNote = findViewById(currentMusicNoteIndex * 6 + 2);
+                                            textMusicNote.setTextColor(Color.GREEN);
+                                            TextView checkPitchTextView = inputLayout.findViewById(currentMusicNoteIndex * 6 + 5);
+                                            checkPitchTextView.setVisibility(View.VISIBLE);
+                                            if (MusicNote.getMusicStanardNum(currentAudioNoteIndex) >
+                                                    AudioNote.getAudioStandardNum(currentMusicNoteIndex)) {
+                                                checkPitchTextView.setText(AudioCheckNote.getCheckPlayStrings(AudioCheckNote.high));
+                                            } else {
+                                                checkPitchTextView.setText(AudioCheckNote.getCheckPlayStrings(AudioCheckNote.low));
+                                            }
+                                        } else {
+                                            //时间也有问题
+                                            TextView textMusicNote = findViewById(currentMusicNoteIndex * 6 + 2);
+                                            textMusicNote.setTextColor(Color.RED);
+                                            currentMusicNoteIndex--;
+
+                                        }
+                                    }
+                                    currentMusicNoteIndex++;
+                                    currentAudioNoteIndex++;
+                                }
+
+                            }
+                        });
+                    }
+                }
+            }
+        });
+    }
 
 
     private class NewItemSelectedListener1 implements AdapterView.OnItemSelectedListener {
@@ -239,6 +375,7 @@ public class SpectrumWriteActivity extends AppCompatActivity {
             ArrayList<Integer> standardNums = musicNoteLayout.getStandardNums();
             if (standardNums != null) {
                 for (int i = 0; i < standardNums.size(); i++) {
+                    //6个一组，1是升降调，2音符，3高音上标，4低音下标，5高低音检查，6快慢检查
                     MusicNote musicNote = new MusicNote(standardNums.get(i));
                     TextView offsetTextView = inputLayout
                             .findViewById(i * 6 + 1);
@@ -248,23 +385,16 @@ public class SpectrumWriteActivity extends AppCompatActivity {
                             .findViewById(i * 6 + 3);
                     TextView pitchDownTextView = inputLayout
                             .findViewById(i * 6 + 4);
-                    TextView checkPitchTextView=inputLayout
-                            .findViewById(i* 6 + 5);
-                    TextView checkSpeedTextView=inputLayout
-                            .findViewById(i* 6 + 6);
+
 
                     offsetTextView.setText(musicNote
-                            .getoffsetString(inputBigMusicIndex));
+                            .getoffsetString());
                     bigMusciStringTextView.setText(musicNote
-                            .getMusicString(inputBigMusicIndex));
+                            .getMusicString());
                     pitchUpTextView.setText(musicNote
-                            .getPitchUp(inputBigMusicIndex));
+                            .getPitchUp());
                     pitchDownTextView.setText(musicNote
-                            .getPitchDown(inputBigMusicIndex));
-                    checkPitchTextView.setText(musicNote.
-                            getCheckPlayStrings(checkPitch));
-                    checkSpeedTextView.setText(musicNote.
-                            getCheckPlayStrings(checkSpeed));
+                            .getPitchDown());
                 }
             }
         }
@@ -274,6 +404,7 @@ public class SpectrumWriteActivity extends AppCompatActivity {
         }
     }
 
+    //监听左侧按键选择
     RadioGroup.OnCheckedChangeListener onCheckedChangeListener = new RadioGroup.OnCheckedChangeListener() {
 
         @Override
@@ -326,9 +457,8 @@ public class SpectrumWriteActivity extends AppCompatActivity {
     };
 
 
-
-
-    private class backSpaceOnClickListener implements View.OnClickListener {//删除音符表中的字符
+    //删除音符表中的字符
+    private class backSpaceOnClickListener implements View.OnClickListener {
         @Override
         public void onClick(View v) {
             new deleteModel().setMusicNoteLayout(musicNoteLayout, inputLayout, SpectrumWriteActivity.this);
@@ -336,9 +466,10 @@ public class SpectrumWriteActivity extends AppCompatActivity {
         }
     }
 
+    // 监听菜单按键
     private class NewKeyListener implements DialogInterface.OnKeyListener {
         public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
-            if (keyCode == KeyEvent.KEYCODE_MENU)// 监听按键
+            if (keyCode == KeyEvent.KEYCODE_MENU)
                 dialog.dismiss();
             return false;
         }
@@ -358,23 +489,23 @@ public class SpectrumWriteActivity extends AppCompatActivity {
 
                     // Toast.makeText(SpectrumWriteActivity.this, "抱歉，暂不支持保存功能！",
                     //         Toast.LENGTH_SHORT).show();
-                    sendMusic = "@TS" + MusicNote.StoreMusicNote + "#";
+                    sendMusic = "@TS" + MusicNote.MusicNoteStored + "#";
                     RxbleS.sendData(sendMusic.getBytes(), 1000);
                     break;
                 case 2:// 乐曲慢弹
                     // musicNoteLayout.update(40,4);
                     //Toast.makeText(SpectrumWriteActivity.this, "您可以在主界面上设置音符尺寸与模式",
                     //      Toast.LENGTH_SHORT).show();
-                    sendMusic = "@T" + MusicNote.StoreMusicNote + "#";
+                    sendMusic = "@T" + MusicNote.MusicNoteStored + "#";
                     connectAndWrite(sendMusic);
                     break;
                 case 3:// 乐曲连弹
                     //helpDialog.show();
-                    sendMusic = "@T" + MusicNote.StoreMusicNote + "#";
+                    sendMusic = "@T" + MusicNote.MusicNoteStored + "#";
                     connectAndWrite(sendMusic);
                     break;
                 case 4:// 暂停 改隐藏控件
-                    RxbleS.sendData("@Tpause#".getBytes(),1000);
+                    RxbleS.sendData("@Tpause#".getBytes(), 1000);
                     buttonLayout.setVisibility(View.INVISIBLE);
                     numOfMusic = musicNoteLayout.getStandardNumsSize();
                     for (int i = 0; i < numOfMusic; i++) {
@@ -386,7 +517,7 @@ public class SpectrumWriteActivity extends AppCompatActivity {
                     break;
                 case 5:// 停止
                     numOfMusic = musicNoteLayout.getStandardNumsSize();
-                    RxbleS.sendData("@Tstop#".getBytes(),1000);
+                    RxbleS.sendData("@Tstop#".getBytes(), 1000);
             }
         }
     }
@@ -442,68 +573,39 @@ public class SpectrumWriteActivity extends AppCompatActivity {
         int row = (int) ((inputLayout.getHeight() - defaultHight) / (31 * musicNoteLayout
                 .getSize()));
         //if (musicNoteLayout.getStandardNums().size() >= musicNoteLayout
-         //       .getLine() * row) {
-            // Toast.makeText(MainActivity.this, "窗口已满！",
-            // Toast.LENGTH_SHORT).show();
-            // System.out.println("line"+musicNoteLayout.getInputLayout().getHeight());
-        setMusicNote(inputBigMusicIndex,num,offset,pitch,chord,checkSpeed,checkPitch);
+        //       .getLine() * row) {
+        // Toast.makeText(MainActivity.this, "窗口已满！",
+        // Toast.LENGTH_SHORT).show();
+        // System.out.println("line"+musicNoteLayout.getInputLayout().getHeight());
+        setMusicNote(num, offset, pitch, chord, speed);
     }
+
     private void connectAndWrite(final String TotalData) {
-//        splitNoteNum =0;
-//        if (TotalData.length()>=20)
-//        {
-//            for (int j=0;j<TotalData.length();j+=19, splitNoteNum++)
-//            {
-//                if(j+19<TotalData.length())
-//                    SplitData[splitNoteNum]=TotalData.substring(j,j+19);
-//                else {
-//                    SplitData[splitNoteNum] = TotalData.substring(j, TotalData.length());
-//                    break;
-//                }
-//            }
-//        }
-//        else SplitData[0]=TotalData;
-//        Runnable myRunnable= new Runnable() {
-//            public void run() {
-//                for (int j = 0; j<= splitNoteNum; j++)
-//                {
-//                    try {
-//                        RxbleS.sendData(SplitData[j].getBytes(),1000);
-//                        Thread.sleep(1000);
-//                    }
-//                    catch (Exception e)
-//                    {
-//                        e.printStackTrace();
-//                    }
-//                }
-//
-//            }
-//        };
-//        Thread thread = new Thread(myRunnable);
-//        thread.start();
-        RxbleS.sendData(TotalData.getBytes(),1200);
+        RxbleS.sendData(TotalData.getBytes(), 1200);
     }
+
+
     @Override
-    public void onBackPressed()
-    {
+    public void onBackPressed() {
         super.onBackPressed();
         Intent intent = new Intent(this, PracticeResultActivity.class);
         startActivity(intent);
+        dispatcher.removeAudioProcessor(audioProcessor);
+        dispatcher.stop();
+        finish();
         //RxbleS.sendData("@Tstop#".getBytes(),500);
 
     }
-    private void setMusicNote(int inputBigMusicIndex,int num,int offset,int pitch,boolean chord,int checkSpeed,int checkPitch)
-    {
-        MusicNote musicNote = new MusicNote(inputBigMusicIndex, num,
-                offset, pitch,chord);
-        if(musicNote.getChord())
-            musicNoteLayout.drawMusicNoteInput(musicNote, num,checkSpeed,checkPitch);// 输入的调
-        else
-        musicNoteLayout.drawMusicNoteInput(musicNote, inputBigMusicIndex,checkSpeed,checkPitch);// 输入的调
 
-        if (musicNoteLayout.getStandardNums().size() > 1)
-        {
+    private void setMusicNote(int num, int offset, int pitch, boolean chord, int speed) {
+        MusicNote musicNote = new MusicNote(num, offset, pitch, chord, speed);
+
+        musicNoteLayout.drawMusicNoteInput(musicNote);// 输入的调
+
+        if (musicNoteLayout.getStandardNums().size() > 1) {
             new NumberClickModel().setMusicNoteLayout(musicNoteLayout, inputLayout);
         }
     }
-    }
+
+
+}

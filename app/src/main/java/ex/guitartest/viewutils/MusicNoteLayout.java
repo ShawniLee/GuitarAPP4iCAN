@@ -178,7 +178,7 @@ public class MusicNoteLayout {
     }
 
 
-    public void drawMusicNoteInput(MusicNote musicNote, int outputBigMusicIndex,int checkSpeed,int checkPitch) {
+    public void drawMusicNoteInput(MusicNote musicNote) {
 
         int inputColor = 0x0000ff00;
         // int inputColor = 0x77ffffff;
@@ -193,10 +193,10 @@ public class MusicNoteLayout {
         offsetTextView.setWidth((int) (10 * size));
         offsetTextView.setHeight((int) (30 * size));
         offsetTextView.setTextSize(px2sp(activity, 8 * size));
-        if (musicNote.getoffsetString(outputBigMusicIndex) == "#") {
+        if (musicNote.getoffsetString() == "#") {
             offsetTextView.setTextSize(px2sp(activity, 8 * size));
         }
-        offsetTextView.setText(musicNote.getoffsetString(outputBigMusicIndex));
+        offsetTextView.setText(musicNote.getoffsetString());
         offsetTextView.setBackgroundColor(inputColor);
         offsetTextView.setTextColor(Color.BLUE);
         offsetTextView.setGravity(Gravity.CENTER);
@@ -212,7 +212,7 @@ public class MusicNoteLayout {
         pitchUpTextView.setTextSize(px2sp(activity, 4 * size));
         pitchUpTextView.setBackgroundColor(inputColor);
         pitchUpTextView.setGravity(Gravity.CENTER);
-        pitchUpTextView.setText(musicNote.getPitchUp(outputBigMusicIndex));
+        pitchUpTextView.setText(musicNote.getPitchUp());
         layout.addView(pitchUpTextView);
 
         TextView pitchDownTextView = new TextView(activity);
@@ -225,7 +225,7 @@ public class MusicNoteLayout {
         pitchDownTextView.setTextSize(px2sp(activity, 4 * size));
         pitchDownTextView.setBackgroundColor(inputColor);
         pitchDownTextView.setGravity(Gravity.CENTER);
-        pitchDownTextView.setText(musicNote.getPitchDown(outputBigMusicIndex));
+        pitchDownTextView.setText(musicNote.getPitchDown());
         layout.addView(pitchDownTextView);
 
         TextView bigMusciStringTextView = new TextView(activity);
@@ -240,11 +240,11 @@ public class MusicNoteLayout {
         {
             bigMusciStringTextView.setTextSize(px2sp(activity, 10 * size));
             if (musicNote
-                    .getMusicString(outputBigMusicIndex).equals("Cm"))
+                    .getMusicString().equals("Cm"))
                 bigMusciStringTextView.setTextSize(px2sp(activity, 8 * size));
         }
         bigMusciStringTextView.setText(musicNote
-                .getMusicString(outputBigMusicIndex));
+                .getMusicString());
         bigMusciStringTextView.setBackgroundColor(inputColor);
         bigMusciStringTextView.setGravity(Gravity.CENTER);
         bigMusciStringTextView.setTextColor(numColor);
@@ -258,7 +258,7 @@ public class MusicNoteLayout {
         checkPitchUpView.setHeight((int) (40 * size));
         checkPitchUpView.setTextSize(px2sp(activity, 10 * size));
 
-        checkPitchUpView.setText(musicNote.getCheckPlayStrings(checkPitch));
+//        checkPitchUpView.setText(musicNote.getCheckPlayStrings(checkPitch));
         checkPitchUpView.setBackgroundColor(inputColor);
         checkPitchUpView.setTextColor(Color.RED);
         checkPitchUpView.setGravity(Gravity.CENTER);
@@ -272,7 +272,7 @@ public class MusicNoteLayout {
         checkSpeedOKView.setWidth((int) (20 * size));
         checkSpeedOKView.setHeight((int) (40 * size));
         checkSpeedOKView.setTextSize(px2sp(activity, 10 * size));
-        checkSpeedOKView.setText(musicNote.getCheckPlayStrings(checkSpeed));
+//        checkSpeedOKView.setText(musicNote.getCheckPlayStrings(checkSpeed));
         checkSpeedOKView.setBackgroundColor(inputColor);
         checkSpeedOKView.setTextColor(Color.RED);
         checkSpeedOKView.setGravity(Gravity.CENTER);

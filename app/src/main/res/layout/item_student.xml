@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/shape_add">
 
@@ -10,23 +12,19 @@
         android:layout_height="120dp"
         android:orientation="vertical">
 
-        <ImageView
-            android:id="@+id/ll_picture"
-            android:layout_width="70dp"
-            android:layout_height="70dp"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="10dp"
-            android:src="@drawable/portrait" />
+        <com.assistne.icondottextview.IconDotTextView
+            android:id="@+id/iconDot"
+            android:layout_width="94dp"
 
-        <TextView
-            android:id="@+id/ll_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="84dp"
             android:layout_gravity="center_horizontal"
-            android:layout_marginTop="10dp"
-            android:text="我的学生"
-            android:textColor="@color/text_deep"
-            android:textSize="14sp" />
+            android:layout_marginTop="15dp"
+            app:dot_text="1"
+            app:dot_visible="false"
+            app:icon="@drawable/portrait"
+            app:icon_size="60dp"
+            app:text="Category" />
+
     </LinearLayout>
 
 </LinearLayout>

@@ -9,33 +9,35 @@ import java.util.ArrayList;
  * Created by qyxlx on 2018/4/30.
  */
 public class MusicNote {
-	public static ArrayList<String> StoreMusicNote=new ArrayList<>();
-	public int standardNum; // 每个音符的唯一标识
-	public boolean isProlong = false;
-	public int[] bigMusicNum = { 0, 2, 4, 5, 7, 9, 11 };// 全全半全全全半
+	public static ArrayList<String> MusicNoteStored =new ArrayList<>();//存储乐谱
+	public static ArrayList<Long> StandardTimeSpeed=new ArrayList<>();
+	public static final int OneBeatTime=125;
+	private int standardNum; // 每个音符的唯一标识  标准数的范围为：-12 --- -1 低音 0 延长 1 --- 12 中音 13 --- 24 高音
+	private boolean isProlong = false;
+	private static  int[] bigMusicNum = { 0, 2, 4, 5, 7, 9, 11 };// 全全半全全全半
+	final static public int[] NoteHzRange = {
+			131,139,147,156,165,175,185,196,208,220,233,247,//-12 --- -1
+			262,277,294,311,330,349,370,392,415,440,466,494,//0 --- 11
+			523,587,622,660,699,740,784,831,880,932,988,1047//12 --- 23
+	};
 														// 这里数字以半音为一个单位,数组里是相差
-	static public String bigMusicStrings[] = new String[] { "1", "1", "2", "3", "3",
+	private static String bigMusicStrings[] = new String[] { "1", "1", "2", "3", "3",
 			"4", "4", "5", "6", "6", "7", "7" };
-    static public String[] chordMusicStrings = new String[]{"C", "Cm7", "Dm", "A7", "Em", "F","G","F#", "Ab", "A", "Bb", "B"};//Em为Eb,G和F#调换了位置
-	public String offsetStrings[] = new String[] { " ", "#", " ", "b", " ",
+    private static String[] chordMusicStrings = new String[]{"C", "Cm7", "Dm", "G", "Em", "F","D","F#", "Ab", "A", "Bb", "B"};//Em为Eb,G和F#调换了位置
+	private String offsetStrings[] = new String[] { " ", "#", " ", "b", " ",
 			" ", "#", " ", "b", " ", "b", " " };
-	public String checkPlayStrings[]=new String[]{"↑","↓","→","←"," "};
-	private final int tempSpeedFlag=3;
-	private boolean chord;
 
-	public MusicNote(int inputBigMusicIndex, int num, int offset, int pitch,boolean chord) {
+
+	public MusicNote( int num, int offset, int pitch,boolean chord,int speed) {
 		// inputBigMusicIndex为该大调在数组中的位置(0-11) num为简谱的数字(1-7)
 		// offset为-1 0 1 代表升降调 pitch为-1 0 1 代表低音 中音 高音
 		if (num == 0) {
 			isProlong = true;
 			standardNum = -100;
 		} else {
-			this.standardNum = inputBigMusicIndex + bigMusicNum[num - 1]
-					+ offset + 12 * pitch;
-			this.chord=chord;
-			setStoreMusicNote(num,pitch,chord);
+			this.standardNum = normalNum2StandardNum(num,offset,pitch,chord);
+			setStoreMusicNote(num,pitch,speed);
 		}
-		// 得出的标准数的范围为：-13 --- 35
 	}// 2+4 0+6
 
 	public MusicNote(int standardNum) {
@@ -45,54 +47,50 @@ public class MusicNote {
 		}
 	}
 
-	public String getPitchUp(int outputBigMusicIndex) {
+	public String getPitchUp() {
 		if (isProlong) {
 			return " ";
 		} else {
-			return standardNum - outputBigMusicIndex < 0 ? " " : standardNum
-					- outputBigMusicIndex < 12 ? " " : "●";
+			return standardNum < 0 ? " " : standardNum < 12 ? " " : "●";
 		}
 	}
 
-	public String getPitchDown(int outputBigMusicIndex) {
+	public String getPitchDown() {
 		if (isProlong) {
 			return " ";
 		} else {
-			return standardNum - outputBigMusicIndex < 0 ? "●" : standardNum
-					- outputBigMusicIndex < 12 ? " " : " ";
+			return standardNum < 0 ? "●" : standardNum < 12 ? " " : " ";
 		}
 	}
 
-	public int getPitch(int outputBigMusicIndex) {
+	public int getPitch() {
 		if (isProlong) {
 			return 0;
 		} else {
-			return standardNum - outputBigMusicIndex < 0 ? -1 : standardNum
-					- outputBigMusicIndex < 12 ? 0 : 1;
+			return standardNum< 0 ? -1 : standardNum < 12 ? 0 : 1;
 		}
 	}
 
-	public String getMusicString(int outputBigMusicIndex) {
+	public String getMusicString() {
 		if (isProlong) {
 			return "-";
 		} else {
-			int num = standardNum - outputBigMusicIndex - 12
-					* this.getPitch(outputBigMusicIndex);
-			if (chord) {
-				return chordMusicStrings[outputBigMusicIndex-1];
+			int num = standardNum- 12 * this.getPitch();
+			if (getChord()) {
+				return chordMusicStrings[standardNum-49];//和弦从49号开始
 			} else {
 				return bigMusicStrings[num];
 			}
 		}
 	}
 
-	public String getoffsetString(int outputBigMusicIndex) {
+	public String getoffsetString() {
 		if (isProlong) {
 			return " ";
 		} else {
-			int num = standardNum - outputBigMusicIndex - 12
-					* this.getPitch(outputBigMusicIndex);
-			if (chord) {
+			int num = standardNum - 12
+					* this.getPitch();
+			if (getChord()) {
 				return " ";
 
 			} else {
@@ -101,44 +99,38 @@ public class MusicNote {
 		}
 	}
 
-	public String getCheckPlayStrings(int whichError) {
-		if (whichError==10||isProlong)return checkPlayStrings[4];
-		return checkPlayStrings[whichError];
-
-	}
 
 	public static boolean deleteObject()
 	{
-		if (StoreMusicNote.size()<3)
+		if (MusicNoteStored.size()==0)
 			return false;
 		else {
-			for (int i = 0; i > 3; i++)
-				StoreMusicNote.remove(StoreMusicNote.size() - 1);
+				MusicNoteStored.remove(MusicNoteStored.size() - 1);
 			return true;
 		}
 	}
 	public static void cleanAll()
 	{
-		StoreMusicNote.clear();
+		MusicNoteStored.clear();
 	}
-	public void setStoreMusicNote(int num,int pitch,boolean chord)
+	public void setStoreMusicNote(int num,int pitch,int speed)
 	{
-		if (chord)
+        if (getChord())
 		{
 			pitch=100;
 			switch (num)
 			{
 				case 1:
-					StoreMusicNote.add("43"+tempSpeedFlag);
+					MusicNoteStored.add("43"+ speed);
 					break;
 				case 3:
-					StoreMusicNote.add("48"+tempSpeedFlag);
+					MusicNoteStored.add("48"+ speed);
 					break;
 				case 4:
-					StoreMusicNote.add("51"+tempSpeedFlag);
+					MusicNoteStored.add("51"+ speed);
 					break;
 				case 7:
-					StoreMusicNote.add("60"+tempSpeedFlag);
+					MusicNoteStored.add("60"+ speed);
 					break;
 				default:
 					Log.d("MusicNoteChord", "Chord Error");
@@ -148,31 +140,61 @@ public class MusicNote {
 		switch (pitch)
 		{
 			case 1:
-				StoreMusicNote.add("0"+String.valueOf(5-num)+tempSpeedFlag);
+				MusicNoteStored.add("0"+String.valueOf(5-num)+ speed);
 				break;
 			case 0:
 				if (num>2)
-					StoreMusicNote.add("0"+String.valueOf(12-num)+tempSpeedFlag);
+					MusicNoteStored.add("0"+String.valueOf(12-num)+ speed);
 				else
-					StoreMusicNote.add(String.valueOf(12-num)+tempSpeedFlag);
+					MusicNoteStored.add(String.valueOf(12-num)+ speed);
 				break;
 			case -1:
-				StoreMusicNote.add(String.valueOf(19-num)+tempSpeedFlag);
+				MusicNoteStored.add(String.valueOf(19-num)+ speed);
 				break;
 			default:
 				break;
 		}
+		if (StandardTimeSpeed.size()>0){
+			StandardTimeSpeed.add(StandardTimeSpeed.get(StandardTimeSpeed.size()-1)+OneBeatTime*(long)Math.pow(2,speed));
+			//每个音的时间记录都是相对于第一个音来说的
+		}
+        else{
+        	StandardTimeSpeed.add((long)0);
+			StandardTimeSpeed.add((long)OneBeatTime*(long)Math.pow(2,speed));//第一个元素其实是第二个音的开头时间
+		}
 	}
-
-	public int getStandardNum() {
-		return standardNum;
+	public static int deCodeStoreMusicPitch2Standard(int index){
+		String temp=MusicNoteStored.get(index);
+		int NormalNum=Integer.parseInt(temp.substring(0,2));
+		int pitch=(18-NormalNum)/7 -1;
+		int num=(18-NormalNum)%7+1;
+		return normalNum2StandardNum(num,0,pitch,false);
 	}
+    public int getStandardNum() {
+        return standardNum;
+    }
 	public boolean getChord()
     {
-        return chord;
-    }
+		return standardNum > 48;
+	}
     static public String[] getChordMusicStrings()
     {
         return chordMusicStrings;
     }
+    static public int getStandardNoteHz(){
+		return NoteHzRange.length;
+	}
+	static public int getStandardNoteHz(int index){
+		return NoteHzRange[index];
+	}
+	private static int normalNum2StandardNum(int num, int offset, int pitch,boolean chord){
+		return chord ?  48 + num : bigMusicNum[num - 1] + offset + 12 * pitch;
+		//和弦是48以后，之前是标准数
+	}
+	public static long getMusicStandardTime(int index){
+		return StandardTimeSpeed.get(index);
+	}
+	public static int getMusicStanardNum(int index){
+		return deCodeStoreMusicPitch2Standard(index);
+	}
 }
