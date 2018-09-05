@@ -11,14 +11,20 @@ import java.util.ArrayList;
 public class MusicNote {
 	public static ArrayList<String> MusicNoteStored =new ArrayList<>();//存储乐谱
 	public static ArrayList<Long> StandardTimeSpeed=new ArrayList<>();
-	public static final int OneBeatTime=125;
+	public static final int OneBeatTime=250;
 	private int standardNum; // 每个音符的唯一标识  标准数的范围为：-12 --- -1 低音 0 延长 1 --- 12 中音 13 --- 24 高音
 	private boolean isProlong = false;
 	private static  int[] bigMusicNum = { 0, 2, 4, 5, 7, 9, 11 };// 全全半全全全半
+//	final static public int[] NoteHzRange = {
+//			131,139,147,156,165,175,185,196,208,220,233,247,//-12 --- -1
+//			262,277,294,311,330,349,370,392,415,440,466,494,//0 --- 11
+//			523,587,622,660,699,740,784,831,880,932,988,1047//12 --- 23
+//	};
+	//TODO：针对吉他的特殊优化，未编写变调部分
 	final static public int[] NoteHzRange = {
-			131,139,147,156,165,175,185,196,208,220,233,247,//-12 --- -1
-			262,277,294,311,330,349,370,392,415,440,466,494,//0 --- 11
-			523,587,622,660,699,740,784,831,880,932,988,1047//12 --- 23
+			65 ,69 ,73 ,78 ,82 ,87 ,93 ,98 ,104,110,117,124,//-12 --- -1
+			131,139,147,156,165,175,185,196,208,220,233,247,//0 --- 11
+			262,277,294,311,330,349,370,392,415,440,466,494,//12 --- 23
 	};
 														// 这里数字以半音为一个单位,数组里是相差
 	private static String bigMusicStrings[] = new String[] { "1", "1", "2", "3", "3",
@@ -197,14 +203,19 @@ public class MusicNote {
 		return NoteHzRange.length;
 	}
 	static public int getStandardNoteHz(int index){
-		return NoteHzRange[index-12];//TODO：针对吉他的特殊优化，未编写变调部分
+		return NoteHzRange[index];
 	}
 	private static int normalNum2StandardNum(int num, int offset, int pitch,boolean chord){
 		return chord ?  48 + num : bigMusicNum[num - 1] + offset + 12 * pitch;
 		//和弦是48以后，之前是标准数
 	}
 	public static long getMusicStandardTime(int index){
-		return StandardTimeSpeed.get(index);
+		if (index<StandardTimeSpeed.size()){
+			return StandardTimeSpeed.get(index);
+		}else{
+			return StandardTimeSpeed.get(StandardTimeSpeed.size()-1);
+		}
+
 	}
 	public static int getMusicStanardNum(int index){
 		return deCodeStoreMusicPitch2Standard(index);

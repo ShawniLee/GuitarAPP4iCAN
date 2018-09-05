@@ -18,6 +18,7 @@ import rx.functions.Action1;
 public class RxBleService extends Service {
     private RxBle mrxBle = RxBle.getInstance();
     private String maddress;
+    private boolean mBleConnectState=false;
     private String TAG = this.getClass().getName();
     public boolean hereOver = false;
     //communication
@@ -33,7 +34,7 @@ public class RxBleService extends Service {
                 if ((maddress!=null&&maddress.equals(bleDevice.getAddress())) || bleDevice.getName().contains("Smart_Guitar"))
                 {
                     Log.d(TAG,"find device!");
-                    mrxBle.connectDevice(bleDevice);
+                    mBleConnectState=mrxBle.connectDevice(bleDevice);
                 }
 
             }

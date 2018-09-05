@@ -36,11 +36,11 @@ public class RxBle {
 
     private String CONNECTION_STATE;
     private BluetoothAdapter mBleAdapter;
-    private boolean mBli
     private boolean mIsScanning;
     private static String sTargetDeviceName;
     private BluetoothGatt mBleGatt;
     private BluetoothGattCharacteristic mBleGattChar;
+    public boolean isBleSendFinish=true;
 
     private boolean msendDataState;
     private Subject<byte[], byte[]> mBus;
@@ -227,6 +227,16 @@ public class RxBle {
         }
 
         @Override
+        //写特性
+        public void onCharacteristicWrite(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
+            super.onCharacteristicWrite(gatt, characteristic, status);
+            isBleSendFinish = true;
+            if (status == BluetoothGatt.GATT_SUCCESS) {
+            }else {
+            }
+        }
+
+        @Override
         public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
             Log.d(TAG, "onCharacteristicChanged");
             byte receiveData[] = characteristic.getValue();
@@ -281,12 +291,47 @@ public class RxBle {
                 .subscribe(new Action1<Long>() {
                     @Override
                     public void call(Long l) {
-                        //TODO write logic
-                        if (mBleGatt != null && mwriteChar != null) {
-                            mwriteChar.setValue(data);
-                            boolean isSend = mBleGatt.writeCharacteristic(mwriteChar);
-                            msendDataState=isSend;
-                            Log.d(TAG, "send " + (isSend ? "success" : "fail"));
+                        //分包
+                        int packets = 0;
+                        int length_bytes = data.length;
+                        // 分包
+                        final int perPacketLength = 20;
+                        if (length_bytes > perPacketLength) {
+                            int startPoint = 0;
+                            byte[] bytes = new byte[perPacketLength];
+                            while (length_bytes > perPacketLength) {
+                                while (!isBleSendFinish) {
+                                }
+                                isBleSendFinish = false;
+                                System.arraycopy(data, startPoint, bytes, 0, perPacketLength);
+                                mwriteChar.setValue(bytes);
+                                startPoint += perPacketLength;
+                                length_bytes -= perPacketLength;
+                                if (mBleGatt.writeCharacteristic(mwriteChar)) {
+                                    packets++;
+                                    Log.i("统计一包", "1");
+                                }
+                            }
+                            while (!isBleSendFinish) { }
+                            isBleSendFinish = false;
+
+                            if (length_bytes != perPacketLength) {
+                                length_bytes = data.length % perPacketLength;
+                            }
+                            if (length_bytes > 0) {
+                                byte[] bytes_last = new byte[length_bytes];
+                                System.arraycopy(data, startPoint, bytes_last, 0, length_bytes);
+                                mwriteChar.setValue(bytes_last);
+                                packets = mBleGatt.writeCharacteristic(mwriteChar) ? packets + 1 : packets;
+                                Log.d("最终输出包数：",String.valueOf(packets));
+                            }
+                        }else {
+                            if (mBleGatt != null && mwriteChar != null) {
+                                mwriteChar.setValue(data);
+                                boolean isSend = mBleGatt.writeCharacteristic(mwriteChar);
+                                msendDataState = isSend;
+                                Log.d(TAG, "send " + (isSend ? "success" : "fail"));
+                            }
                         }
                     }
                 });

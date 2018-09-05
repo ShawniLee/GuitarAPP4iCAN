@@ -292,8 +292,8 @@ public class SpectrumWriteActivity extends AppCompatActivity {
                                             textMusicNote.setTextColor(Color.GREEN);
                                             TextView checkSpeedTextView = inputLayout.findViewById(currentMusicNoteIndex * 6 + 6);
                                             checkSpeedTextView.setVisibility(View.VISIBLE);
-                                            if (MusicNote.getMusicStandardTime(currentAudioNoteIndex) >
-                                                    AudioNote.getAudioStandardTime(currentMusicNoteIndex)) {
+                                            if (MusicNote.getMusicStandardTime(currentMusicNoteIndex) >
+                                                    AudioNote.getAudioStandardTime(currentAudioNoteIndex)) {
                                                 //当前时间长了，弹慢了
                                                 checkSpeedTextView.setText(AudioCheckNote.getCheckPlayStrings(AudioCheckNote.slow));
                                             } else {
