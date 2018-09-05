@@ -36,6 +36,7 @@ public class RxBle {
 
     private String CONNECTION_STATE;
     private BluetoothAdapter mBleAdapter;
+    private boolean mBli
     private boolean mIsScanning;
     private static String sTargetDeviceName;
     private BluetoothGatt mBleGatt;
@@ -229,7 +230,7 @@ public class RxBle {
         public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
             Log.d(TAG, "onCharacteristicChanged");
             byte receiveData[] = characteristic.getValue();
-            Log.d(TAG, "receive BLE 's data :" + receiveData);
+            Log.d(TAG, "receive BLE 's data :" + new String(receiveData));
             Observable.just(receiveData)
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(new Action1<byte[]>() {

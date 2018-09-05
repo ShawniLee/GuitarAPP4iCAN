@@ -9,24 +9,20 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.GridView;
+import android.widget.EditText;
 import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
-import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import be.tarsos.dsp.AudioDispatcher;
 import be.tarsos.dsp.AudioEvent;
@@ -89,23 +85,16 @@ public class SpectrumWriteActivity extends AppCompatActivity {
     AudioProcessor audioProcessor;
     Thread audioThread;
     private int numOfMusic = 0;
-    int[] menu_image_array = {R.drawable.ic_menu_delete,
-            R.drawable.ic_menu_save, R.drawable.ic_menu_preferences,
-            R.drawable.ic_menu_help, R.drawable.ic_menu_info_details,
-            R.drawable.ic_menu_favorite};
     //菜单文字
-    String[] menu_name_array = {"清空", "单个音符", "乐曲慢弹", "播放", "暂停", "停止"};
-    AlertDialog menuDialog;// menu菜单Dialog
-    AlertDialog promptDialog; // 提示对话框
-    AlertDialog helpDialog;
-    GridView menuGrid;
-    View menuView;
+
     String sendMusic = "";
     private int speed;
 
     //更新UI
     private int numOfText = 0;
 
+    AlertDialog godDialog;
+    EditText sendMessageEditText;
 
     private SharedPreferences settings;
     private boolean firstStart = true;
@@ -146,19 +135,10 @@ public class SpectrumWriteActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        menu.add("menu");// 必须创建一项
-        return super.onCreateOptionsMenu(menu);
+        getMenuInflater().inflate(R.menu.spectrumwrite, menu);
+        return true;
     }
 
-    @Override
-    public boolean onMenuOpened(int featureId, Menu menu) {
-        if (menuDialog == null) {
-            menuDialog = new AlertDialog.Builder(this).setView(menuView).show();
-        } else {
-            menuDialog.show();
-        }
-        return false;// 返回为true 则显示系统menu
-    }
 
     private void initResources() {
         settings = getSharedPreferences("AudioInput", MODE_PRIVATE);
@@ -166,7 +146,7 @@ public class SpectrumWriteActivity extends AppCompatActivity {
         SharedPreferences.Editor prefEditor = settings.edit();
         prefEditor.putBoolean("firstStart", false);
         prefEditor.apply();
-
+        sendMessageEditText =new EditText(this);
 
         defaultHight = SizeSwitch.sp2px(SpectrumWriteActivity.this, 50);
         musicNoteLayout = new MusicNoteLayout((50 + 20) / 2, this);// 尺寸每个音符的宽度（基准尺寸为50）
@@ -177,7 +157,6 @@ public class SpectrumWriteActivity extends AppCompatActivity {
     }
 
     private void initView() {
-
 
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
                 android.R.layout.simple_spinner_item, chordMusicStrings);
@@ -193,20 +172,24 @@ public class SpectrumWriteActivity extends AppCompatActivity {
         Button backSpacebButton = findViewById(R.id.buttonBackSpace);
         backSpacebButton.setOnClickListener(new backSpaceOnClickListener());
 
-        menuView = View.inflate(this, R.layout.my_menu, null);
-        // 创建AlertDialog
-        menuDialog = new AlertDialog.Builder(this).create();
-        // 设置透明度
-        Window window = menuDialog.getWindow();
-        WindowManager.LayoutParams lp = window.getAttributes();
-        lp.alpha = 0.7f;
-        window.setAttributes(lp);
-        menuDialog.setView(menuView);
-        menuDialog.setOnKeyListener(new NewKeyListener());
-        menuGrid = menuView.findViewById(R.id.gridview);
-        menuGrid.setAdapter(getMenuAdapter(menu_name_array, menu_image_array));
-        /** 监听menu选项 **/
-        menuGrid.setOnItemClickListener(new NewItemClickListener());
+        //上帝模式输入框，默认框内内容是上一次发送的内容
+        godDialog=new AlertDialog.Builder(this).setView(sendMessageEditText)
+                .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        godDialog.dismiss();
+                    }
+                })
+                .setPositiveButton("发送", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        sendMusic= sendMessageEditText.getText().toString();
+                        connectAndWrite(sendMusic);
+                        godDialog.dismiss();
+                    }
+                }).create();
+
+
 
         // 下面是提示信息的对话框
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -221,21 +204,6 @@ public class SpectrumWriteActivity extends AppCompatActivity {
             public void onClick(DialogInterface dialog, int which) {
             }
         });
-        promptDialog = builder.create();
-        Window promptDialogWindow = promptDialog.getWindow();
-        WindowManager.LayoutParams lp_promptDialog = promptDialogWindow.getAttributes();
-        lp_promptDialog.alpha = 0.8f;
-        promptDialogWindow.setAttributes(lp);
-        // 下面是帮助对话框
-        AlertDialog.Builder builder_help = new AlertDialog.Builder(this);
-        builder_help.setTitle("帮助信息！");
-        builder_help.setMessage("1. 在左上角选择输入简谱的调号\n2. 使用软键盘输入音符\n3. 选择不同的调号即可完成转调\n");
-        builder_help.setPositiveButton("确定",
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                    }
-                });
-        helpDialog = builder_help.create();
     }
 
     private void initData() {
@@ -466,45 +434,33 @@ public class SpectrumWriteActivity extends AppCompatActivity {
         }
     }
 
-    // 监听菜单按键
-    private class NewKeyListener implements DialogInterface.OnKeyListener {
-        public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
-            if (keyCode == KeyEvent.KEYCODE_MENU)
-                dialog.dismiss();
-            return false;
-        }
-    }
 
-    private class NewItemClickListener implements
-            AdapterView.OnItemClickListener {
-        public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
-                                long arg3) {
-            menuDialog.hide();
-            switch (arg2) {
-                case 0:// 清空
-                    promptDialog.show();
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+                case R.id.cleanAll:// 清空
                     MusicNote.cleanAll();
                     break;
-                case 1:// 单个音符
+                case R.id.ANote:// 单个音符
 
                     // Toast.makeText(SpectrumWriteActivity.this, "抱歉，暂不支持保存功能！",
                     //         Toast.LENGTH_SHORT).show();
-                    sendMusic = "@TS" + MusicNote.MusicNoteStored + "#";
+                    sendMusic = "@TS" + MusicNote.getMusicNoteStored2String() + "#";
                     RxbleS.sendData(sendMusic.getBytes(), 1000);
                     break;
-                case 2:// 乐曲慢弹
+                case R.id.slowMusic:// 乐曲慢弹
                     // musicNoteLayout.update(40,4);
                     //Toast.makeText(SpectrumWriteActivity.this, "您可以在主界面上设置音符尺寸与模式",
                     //      Toast.LENGTH_SHORT).show();
-                    sendMusic = "@T" + MusicNote.MusicNoteStored + "#";
+                    sendMusic = "@T"+String.format("%03d",MusicNote.MusicNoteStored.size())+"0" + MusicNote.getMusicNoteStored2String()  + "#";
+                    //TODO:默认音频速度是首音符速度
                     connectAndWrite(sendMusic);
                     break;
-                case 3:// 乐曲连弹
+                case R.id.normalMusic:// 乐曲连弹
                     //helpDialog.show();
-                    sendMusic = "@T" + MusicNote.MusicNoteStored + "#";
+                    sendMusic = "@T"+String.format("%03d",MusicNote.MusicNoteStored.size())+"0" + MusicNote.getMusicNoteStored2String() + "#";
                     connectAndWrite(sendMusic);
                     break;
-                case 4:// 暂停 改隐藏控件
+                case R.id.pause:// 暂停 改隐藏控件
                     RxbleS.sendData("@Tpause#".getBytes(), 1000);
                     buttonLayout.setVisibility(View.INVISIBLE);
                     numOfMusic = musicNoteLayout.getStandardNumsSize();
@@ -515,28 +471,19 @@ public class SpectrumWriteActivity extends AppCompatActivity {
                         speedText.setVisibility(View.INVISIBLE);
                     }
                     break;
-                case 5:// 停止
+                case R.id.stop:// 停止
                     numOfMusic = musicNoteLayout.getStandardNumsSize();
                     RxbleS.sendData("@Tstop#".getBytes(), 1000);
+                    break;
+            case R.id.godMode:
+                godDialog.show();
+                break;
             }
+        sendMessageEditText.setText(sendMusic);
+        return super.onOptionsItemSelected(item);
         }
-    }
 
-    private SimpleAdapter getMenuAdapter(String[] menuNameArray,
-                                         int[] imageResourceArray) {
-        ArrayList<HashMap<String, Object>> data = new ArrayList<HashMap<String, Object>>();
-        for (int i = 0; i < menuNameArray.length; i++) {
-            HashMap<String, Object> map = new HashMap<String, Object>();
-            map.put("itemImage", imageResourceArray[i]);
-            map.put("itemText", menuNameArray[i]);
-            data.add(map);
-        }
-        SimpleAdapter simperAdapter = new SimpleAdapter(this, data,
-                R.layout.my_menu_items,
-                new String[]{"itemImage", "itemText"}, new int[]{
-                R.id.item_image, R.id.item_text});
-        return simperAdapter;
-    }
+
 
     public void numClick(View view) {
         switch (Integer.parseInt((String) view.getTag())) {
@@ -581,7 +528,8 @@ public class SpectrumWriteActivity extends AppCompatActivity {
     }
 
     private void connectAndWrite(final String TotalData) {
-        RxbleS.sendData(TotalData.getBytes(), 1200);
+        final int DelayTime=1200;
+        RxbleS.sendData(TotalData.getBytes(), DelayTime);
     }
 
 

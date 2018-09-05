@@ -23,4 +23,11 @@
     <string name="no_account_yet_create_one2">想学吉他？点击这里注册</string>
     <string name="studentHadSignUpHint">已经有账户了？点击这里登录</string>
     <string name="description_define_in_xml">乐谱同步中</string>
+    <string name="ANote">单个音符</string>
+    <string name="slowMusic">乐曲慢弹</string>
+    <string name="normalMusic">乐曲连弹</string>
+    <string name="clean">清空</string>
+    <string name="pause">暂停</string>
+    <string name="stop">停止</string>
+    <string name="GodMode">上帝模式</string>
 </resources>

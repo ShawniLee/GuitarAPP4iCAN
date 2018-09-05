@@ -6,19 +6,7 @@ public class AudioNote {
     public static ArrayList<AudioNote> AudioGetMusicNoteStored=new ArrayList<>();//存储麦克风接收到的声音,多线程不安全
     public int standardNum;
     public long currentTimeInterval;//和第一个音的时间间隔
-    private Callback mCallback;
 
-    public interface Callback{
-        public abstract void changeUI();
-    }
-
-    public void setmCallback(Callback callback){
-        this.mCallback=callback;
-    }
-
-    public void doWhat(){
-        mCallback.changeUI();
-    }
 
    public AudioNote(int standardNum, long TimeDiffence){
         this.standardNum=standardNum;

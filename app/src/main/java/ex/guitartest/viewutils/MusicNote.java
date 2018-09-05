@@ -23,7 +23,7 @@ public class MusicNote {
 														// 这里数字以半音为一个单位,数组里是相差
 	private static String bigMusicStrings[] = new String[] { "1", "1", "2", "3", "3",
 			"4", "4", "5", "6", "6", "7", "7" };
-    private static String[] chordMusicStrings = new String[]{"C", "Cm7", "Dm", "G", "Em", "F","D","F#", "Ab", "A", "Bb", "B"};//Em为Eb,G和F#调换了位置
+    private static String[] chordMusicStrings = new String[]{"C", "Cm7", "Dm", "Em", "Em", "F","G","F#", "Ab", "A", "Bb", "B"};//Em为Eb,G和F#调换了位置
 	private String offsetStrings[] = new String[] { " ", "#", " ", "b", " ",
 			" ", "#", " ", "b", " ", "b", " " };
 
@@ -45,6 +45,18 @@ public class MusicNote {
 		if (standardNum == -100) {
 			isProlong = true;
 		}
+	}
+
+	public static String getMusicNoteStored2String() {
+		String tmpResult =MusicNoteStored.toString().substring(1,MusicNoteStored.toString().length()-1);
+		StringBuffer result= new StringBuffer();//多线程不安全
+		for (int i=0;i<tmpResult.length();i++)
+		{
+			if (tmpResult.charAt(i)!=','&&tmpResult.charAt(i)!=' ')
+				result.append(tmpResult.charAt(i));
+		}
+
+		return result.toString();
 	}
 
 	public String getPitchUp() {
@@ -127,7 +139,7 @@ public class MusicNote {
 					MusicNoteStored.add("48"+ speed);
 					break;
 				case 4:
-					MusicNoteStored.add("51"+ speed);
+					MusicNoteStored.add("50"+ speed);
 					break;
 				case 7:
 					MusicNoteStored.add("60"+ speed);
@@ -185,7 +197,7 @@ public class MusicNote {
 		return NoteHzRange.length;
 	}
 	static public int getStandardNoteHz(int index){
-		return NoteHzRange[index];
+		return NoteHzRange[index-12];//TODO：针对吉他的特殊优化，未编写变调部分
 	}
 	private static int normalNum2StandardNum(int num, int offset, int pitch,boolean chord){
 		return chord ?  48 + num : bigMusicNum[num - 1] + offset + 12 * pitch;

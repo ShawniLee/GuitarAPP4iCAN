@@ -2,4 +2,11 @@
 <resources>
     <item name="Logout" type="id">Logout_menu</item>
     <item name="FeedBack" type="id">feedback</item>
+    <item name="ANote" type="id">ANote</item>
+    <item name="slowMusic" type="id">slowMusic</item>
+    <item name="normalMusic" type="id">normalMusic</item>
+    <item name="cleanAll" type="id">cleanAll</item>
+    <item name="pause" type="id">pause</item>
+    <item name="stop" type="id">stop</item>
+    <item name="godMode" type="id">godMode</item>
 </resources>

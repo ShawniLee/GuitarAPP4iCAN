@@ -38,11 +38,6 @@ public class SpectrumFragment extends Fragment {
 
     private static final String MAC = "DD:7F:9E:76:7B:8B";
 
-    private static final UUID UUID_SERVICE_CHANNEL
-            = UUID.fromString("6e400003-b5a3-f393-e0a9-e50e24dcca9e");
-
-    private static final UUID UUID_CHARACTERISTIC_CHANNEL
-            = UUID.fromString("6e400002-b5a3-f393-e0a9-e50e24dcca9e");
     @BindView(R.id.list_spectrum)
     ListView listSpectrum;
     @BindView(R.id.tv_letter_overlay)
