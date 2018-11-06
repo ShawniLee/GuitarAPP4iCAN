@@ -309,8 +309,8 @@ public class SpectrumWriteActivity extends AppCompatActivity {
                                             textMusicNote.setTextColor(Color.GREEN);
                                             TextView checkPitchTextView = inputLayout.findViewById(currentMusicNoteIndex * 6 + 5);
                                             checkPitchTextView.setVisibility(View.VISIBLE);
-                                            if (MusicNote.getMusicStanardNum(currentAudioNoteIndex) >
-                                                    AudioNote.getAudioStandardNum(currentMusicNoteIndex)) {
+                                            if (MusicNote.getMusicStanardNum(currentMusicNoteIndex) >
+                                                    AudioNote.getAudioStandardNum(currentAudioNoteIndex)) {
                                                 checkPitchTextView.setText(AudioCheckNote.getCheckPlayStrings(AudioCheckNote.high));
                                             } else {
                                                 checkPitchTextView.setText(AudioCheckNote.getCheckPlayStrings(AudioCheckNote.low));
