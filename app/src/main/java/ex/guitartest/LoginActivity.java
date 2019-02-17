@@ -164,13 +164,13 @@ public class LoginActivity extends AppCompatActivity {
                 Log.d(TAG,tempResponse);
                 loginResult = tempResponse.equals("1");
                 progressDialog.dismiss();
-
-                if (loginResult) {
+                  //因服务器关闭 默认登陆成功
+//                if (loginResult) {
                     onLoginSuccess();
-                }
-                else {
-                    onLoginFailed();
-                }
+//                }
+//                else {
+//                    onLoginFailed();
+//                }
             }
         });
                     }
